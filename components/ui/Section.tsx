@@ -1,9 +1,8 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { motion } from 'framer-motion'
 import clsx from 'clsx'
-import { DURATION, EASE, useInViewOnce, usePrefersReducedMotion } from '@/lib/motion'
+import { useInViewOnce, usePrefersReducedMotion } from '@/lib/motion'
 import { Container, type ContainerProps } from '@/components/ui/Container'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 
@@ -25,20 +24,19 @@ export function Section({ id, eyebrow, heading, width, children, className }: Se
   const [ref, hasEntered] = useInViewOnce<HTMLElement>()
   const reduced = usePrefersReducedMotion()
   const visible = reduced || hasEntered
-  const hiddenY = reduced ? 0 : 12
 
   return (
-    <motion.section
+    <section
       id={id}
       ref={ref}
       className={clsx('py-(--space-section)', className)}
-      initial={{ opacity: 0, y: hiddenY }}
-      animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: hiddenY }}
-      transition={
-        reduced
-          ? { opacity: { duration: DURATION.fast, ease: EASE.out }, y: { duration: 0 } }
-          : { duration: DURATION.slow, ease: EASE.out }
-      }
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'none' : 'translateY(12px)',
+        transition: reduced
+          ? 'opacity var(--dur-fast) var(--ease-out)'
+          : 'opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out)',
+      }}
     >
       <Container width={width}>
         {(eyebrow || heading) && (
@@ -49,6 +47,6 @@ export function Section({ id, eyebrow, heading, width, children, className }: Se
         )}
         {children}
       </Container>
-    </motion.section>
+    </section>
   )
 }

@@ -5,7 +5,7 @@ export const nycHousingPrices: ProjectRecord = {
   status: 'live',
   title: 'What a New York home is worth, and why',
   tagline:
-    'Predicting sale price across 59,350 NYC listings, and finding that location beats '
+    'Predicting list price across 59,350 NYC listings, and finding that location beats '
     + 'every other feature combined.',
   summary:
     'A mid-west REIT wanted to know what to ask for new-build homes across the five '

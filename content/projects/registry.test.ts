@@ -16,13 +16,12 @@ describe('content/projects registry', () => {
     expect(getProject('does-not-exist')).toBeUndefined()
   })
 
-  it('has exactly one live and one planned project in this wave', () => {
+  it('has both records live now that wave 2 has shipped its route', () => {
     const live = projects.filter((p) => p.status === 'live')
     const planned = projects.filter((p) => p.status === 'planned')
-    expect(live).toHaveLength(1)
-    expect(planned).toHaveLength(1)
-    expect(live[0].slug).toBe('nyc-housing-prices')
-    expect(planned[0].slug).toBe('bird-species-cnn')
+    expect(live).toHaveLength(2)
+    expect(planned).toHaveLength(0)
+    expect(live.map((p) => p.slug)).toEqual(['nyc-housing-prices', 'bird-species-cnn'])
   })
 
   it.each(projects)('$slug has no employer, company or client field', (record) => {

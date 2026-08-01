@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import clsx from 'clsx'
 import { Eyebrow } from '@/components/ui/Eyebrow'
+import { wellStyle, type WellSize } from '@/lib/viz/well'
 
 export interface FigureProps {
   /** Mono uppercase kicker, e.g. "MEDIAN LIST PRICE". */
@@ -11,8 +12,8 @@ export interface FigureProps {
   caption?: string
   /** REQUIRED. Rendered in the footer. There is no unsourced figure on this site. */
   source: string
-  /** Reserved aspect ratio for the well, e.g. "4 / 3". Prevents CLS. */
-  ratio: string
+  /** Reserved size for the well: an aspect ratio, or a fixed height. Prevents CLS. */
+  well: WellSize
   /** Optional controls rendered in the well's top-right (segmented control etc.). */
   controls?: ReactNode
   /** The accessible equivalent. REQUIRED. Rendered inside <details>. */
@@ -26,7 +27,7 @@ export interface FigureProps {
  * The shared visualisation chrome. Every visual on the site is a child of this: it is chrome
  * and an accessibility contract only, and owns no scale, colour choice, data or interaction.
  */
-export function Figure({ eyebrow, title, caption, source, ratio, controls, table, children, className }: FigureProps) {
+export function Figure({ eyebrow, title, caption, source, well, controls, table, children, className }: FigureProps) {
   return (
     <figure className={clsx('not-prose', className)}>
       <div className="viz-figure-header">
@@ -37,7 +38,7 @@ export function Figure({ eyebrow, title, caption, source, ratio, controls, table
         </div>
         {controls && <div>{controls}</div>}
       </div>
-      <div className="viz-well" style={{ aspectRatio: ratio }}>
+      <div className="viz-well" style={wellStyle(well)}>
         {children}
       </div>
       <figcaption className="viz-footer">

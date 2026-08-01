@@ -355,11 +355,20 @@ h1, h2, h3 {
 
 .viz-well {
   position: relative;
+  aspect-ratio: var(--well-ratio, auto);
+  height: var(--well-height, auto);
   background: var(--surface-2);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 16px;
   overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .viz-well {
+    aspect-ratio: var(--well-ratio-sm, var(--well-ratio, auto));
+    height: var(--well-height-sm, var(--well-height, auto));
+  }
 }
 
 .viz-footer {

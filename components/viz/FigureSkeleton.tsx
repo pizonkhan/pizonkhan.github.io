@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { Eyebrow } from '@/components/ui/Eyebrow'
+import { wellStyle, type WellSize } from '@/lib/viz/well'
 
 export interface FigureSkeletonProps {
   /** The eyebrow the loaded figure will print. Rendered for real, not as a grey bar. */
@@ -8,19 +9,18 @@ export interface FigureSkeletonProps {
   title: string
   /** True when the loaded figure has a caption, so that line is reserved too. */
   hasCaption?: boolean
-  /** The same string Figure receives, e.g. "4 / 3". */
-  ratio: string
+  /** The same value Figure receives: an aspect ratio or a fixed height. */
+  well: WellSize
   className?: string
 }
 
 /**
  * Figure's box model with an empty well: same header margins, real eyebrow and title, one
  * reserved line for the caption when the loaded figure has one, the well reserved at its
- * final aspect ratio, and one reserved footer line. No spinner, no shimmer, no pulse: a
- * titled empty well reads as "a figure is loading here" without needing its own
- * reduced-motion fallback.
+ * final size, and one reserved footer line. No spinner, no shimmer, no pulse: a titled empty
+ * well reads as "a figure is loading here" without needing its own reduced-motion fallback.
  */
-export function FigureSkeleton({ eyebrow, title, hasCaption, ratio, className }: FigureSkeletonProps) {
+export function FigureSkeleton({ eyebrow, title, hasCaption, well, className }: FigureSkeletonProps) {
   return (
     <figure className={clsx('not-prose', className)} aria-busy="true">
       <div className="viz-figure-header">
@@ -30,7 +30,7 @@ export function FigureSkeleton({ eyebrow, title, hasCaption, ratio, className }:
           {hasCaption && <p className="viz-caption">&nbsp;</p>}
         </div>
       </div>
-      <div className="viz-well" style={{ aspectRatio: ratio }} aria-hidden="true" />
+      <div className="viz-well" style={wellStyle(well)} aria-hidden="true" />
       <div className="viz-footer" aria-hidden="true">
         <span className="viz-source">&nbsp;</span>
         <span>&nbsp;</span>

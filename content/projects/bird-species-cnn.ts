@@ -2,7 +2,7 @@ import type { ProjectRecord } from './types'
 
 export const birdSpeciesCnn: ProjectRecord = {
   slug: 'bird-species-cnn',
-  status: 'planned',
+  status: 'live',
   title: 'Teaching a network to tell 315 birds apart',
   tagline:
     'From a network that has never seen an edge to a fine-tuned VGG16 backbone at 97.651% '
@@ -32,9 +32,9 @@ export const birdSpeciesCnn: ProjectRecord = {
       'Public Kaggle bird-species photo dataset (gpiosenka/100-bird-species). Every figure '
       + 'and example on this page comes from a notebook’s own printed cell output or a '
       + 'forward pass through the same public dataset.',
-    // TODO(pizon): the original Kaggle listing (gpiosenka/100-bird-species) has been
-    // removed from Kaggle and 404s. Pick a reachable citation for this dataset before
-    // this record goes live.
+    // TODO(pizon): the original Kaggle listing (gpiosenka/100-bird-species) has been removed
+    // and 404s. The page ships a text-only citation for it, with no link. Add a reachable
+    // URL to `links` if you find one you are willing to stand behind.
   },
   headlineFigures: [
     {
@@ -149,8 +149,8 @@ export const birdSpeciesCnn: ProjectRecord = {
           + 'resolution and see how much of that gap survives.',
         'One experiment along the way tried the same architecture on grayscale images, on '
           + 'the theory that colour was noise for a shape-based task. It was not: the '
-          + 'grayscale run peaked near 30% during training and settled at 20.8% on '
-          + 'validation, a loss of roughly 40 points against the equivalent colour run. '
+          + 'grayscale run peaked near 30% during training and settled at 21.778% on '
+          + 'validation, a loss of roughly 39 points against the equivalent colour run. '
           + 'Whatever colour was carrying, birds need it.',
         'Tuning the custom CNN’s dense layers with three different search strategies '
           + 'produced three different answers: RandomSearch 0.730, Hyperband 0.690, a '

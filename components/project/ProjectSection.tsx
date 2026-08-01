@@ -1,8 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { motion } from 'framer-motion'
-import { DURATION, EASE, useInViewOnce, usePrefersReducedMotion } from '@/lib/motion'
+import { useInViewOnce, usePrefersReducedMotion } from '@/lib/motion'
 import { Container } from '@/components/ui/Container'
 import { Prose } from '@/components/ui/Prose'
 
@@ -28,20 +27,19 @@ export function ProjectSection({ id, heading, body, visual }: ProjectSectionProp
   const [ref, hasEntered] = useInViewOnce<HTMLElement>()
   const reduced = usePrefersReducedMotion()
   const visible = reduced || hasEntered
-  const hiddenY = reduced ? 0 : 12
 
   return (
-    <motion.section
+    <section
       id={id}
       ref={ref}
       className="py-(--space-section)"
-      initial={{ opacity: 0, y: hiddenY }}
-      animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: hiddenY }}
-      transition={
-        reduced
-          ? { opacity: { duration: DURATION.fast, ease: EASE.out }, y: { duration: 0 } }
-          : { duration: DURATION.slow, ease: EASE.out }
-      }
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'none' : 'translateY(12px)',
+        transition: reduced
+          ? 'opacity var(--dur-fast) var(--ease-out)'
+          : 'opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out)',
+      }}
     >
       <Container>
         <h2 className="text-h2 text-text-primary">
@@ -58,6 +56,6 @@ export function ProjectSection({ id, heading, body, visual }: ProjectSectionProp
         </div>
         {visual && <div className="mt-(--space-block)">{visual}</div>}
       </Container>
-    </motion.section>
+    </section>
   )
 }

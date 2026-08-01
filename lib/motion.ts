@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 /**
  * The motion vocabulary used everywhere on the site. Every JS-driven animation reads
@@ -44,20 +44,26 @@ export function usePrefersReducedMotion(): boolean {
 
 /**
  * Fires once, the first time the element enters the viewport, and never resets. Used for
- * section reveals and one-shot data draws. Returns a ref to attach and whether it has entered.
+ * section reveals and one-shot data draws. Returns a callback ref to attach and whether it
+ * has entered.
+ *
+ * A callback ref rather than a `useRef` object on purpose: several consumers render a
+ * placeholder first (a loading paragraph, an error state) and only mount the ref'd node once
+ * an async load resolves. A `useRef` object never re-runs the attach effect once the node
+ * shows up late, so the observer would never be attached. A callback ref re-fires whenever
+ * the node it's attached to changes, including from `null` to a real element.
  */
 export function useInViewOnce<T extends Element>(
   options?: { threshold?: number; rootMargin?: string },
-): [React.RefObject<T | null>, boolean] {
-  const ref = useRef<T | null>(null)
+): [React.RefCallback<T>, boolean] {
+  const [node, setNode] = useState<T | null>(null)
   const [hasEntered, setHasEntered] = useState(false)
   const threshold = options?.threshold ?? 0.25
   const rootMargin = options?.rootMargin ?? '0px 0px -15% 0px'
+  const ref = useCallback((next: T | null) => setNode(next), [])
 
   useEffect(() => {
-    if (hasEntered) return
-    const node = ref.current
-    if (!node) return
+    if (hasEntered || !node) return
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -74,7 +80,7 @@ export function useInViewOnce<T extends Element>(
 
     observer.observe(node)
     return () => observer.disconnect()
-  }, [hasEntered, threshold, rootMargin])
+  }, [node, hasEntered, threshold, rootMargin])
 
   return [ref, hasEntered]
 }
