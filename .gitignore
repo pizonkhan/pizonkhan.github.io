@@ -51,8 +51,7 @@ out/
 # Downloaded source data for offline generator scripts: never committed, see scripts/README notes
 /.data
 
-# Agent/build-process instructions: how the site was built, not part of the site itself.
-# Kept locally for Claude Code; never published to the public repo.
+# Build-process notes: how the site was built, not part of the site itself.
 /.claude
 /CLAUDE.md
 /docs/plans
