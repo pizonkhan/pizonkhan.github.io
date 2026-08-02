@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { Figure } from '@/components/viz/Figure'
 import { FigureTable } from '@/components/viz/FigureTable'
-import { DURATION, useInViewOnce, usePrefersReducedMotion } from '@/lib/motion'
+import { useInViewOnce, usePrefersReducedMotion } from '@/lib/motion'
 import { formatPercent } from '@/lib/format'
 import { withBasePath } from '@/lib/base-path'
 import { useRovingRadioGroup } from '@/lib/roving-radio'
@@ -129,8 +129,8 @@ export function SoftmaxRace() {
     load(speciesId)
   }, [speciesId, load])
 
-  // Autoplay, once per entry and once per species switch: 16 at 0ms, 8 at 450ms, 3 at 900ms,
-  // the prediction at 1350ms, then the winner's settle pulse at 1800ms, releasing at 2040ms.
+  // Autoplay, once per entry and once per species switch: 16 at 0ms, 8 at 900ms, 3 at 1800ms,
+  // the prediction at 2700ms, then the winner's settle pulse at 3300ms, releasing at 3540ms.
   // Under reduced motion the figure jumps straight to the prediction and runs no timer at all.
   useEffect(() => {
     if (reduced) {
@@ -142,11 +142,11 @@ export function SoftmaxRace() {
 
     setStage(0)
     timersRef.current = [
-      window.setTimeout(() => setStage(1), 450),
-      window.setTimeout(() => setStage(2), 900),
-      window.setTimeout(() => setStage(3), 1350),
-      window.setTimeout(() => setPulsed(true), DURATION.sequence * 1000),
-      window.setTimeout(() => setPulsed(false), DURATION.sequence * 1000 + 240),
+      window.setTimeout(() => setStage(1), 900),
+      window.setTimeout(() => setStage(2), 1800),
+      window.setTimeout(() => setStage(3), 2700),
+      window.setTimeout(() => setPulsed(true), 3300),
+      window.setTimeout(() => setPulsed(false), 3540),
     ]
     return clearStageTimers
   }, [entered, reduced, speciesId, clearStageTimers])
@@ -180,12 +180,16 @@ export function SoftmaxRace() {
     }
   })
 
-  const attributionRows = BIRD_GALLERY.map((bird) => ({
-    species: bird.common,
-    photographer: bird.photographer,
-    license: bird.license,
-    source: bird.sourceUrl,
-  }))
+  const attributionRows = BIRD_GALLERY.flatMap((bird) => [
+    { species: bird.common, photo: 'Picker', photographer: bird.photographer, license: bird.license, source: bird.sourceUrl },
+    {
+      species: bird.common,
+      photo: 'Prediction confirmation',
+      photographer: bird.confirmPhotographer,
+      license: bird.confirmLicense,
+      source: bird.confirmSourceUrl,
+    },
+  ])
 
   return (
     <Figure
@@ -209,9 +213,10 @@ export function SoftmaxRace() {
             rows={stageTableRows}
           />
           <FigureTable
-            caption="Every gallery photograph: photographer, licence and source."
+            caption="Every gallery photograph, the one in the picker and the one confirming each prediction: photographer, licence and source."
             columns={[
               { key: 'species', label: 'Species' },
+              { key: 'photo', label: 'Photo' },
               { key: 'photographer', label: 'Photographer' },
               { key: 'license', label: 'Licence' },
               { key: 'source', label: 'Source' },
@@ -333,7 +338,7 @@ export function SoftmaxRace() {
 
                 {stage === 3 && data[0] && (
                   <div
-                    className="flex h-full flex-col items-center justify-center gap-2 text-center"
+                    className="flex h-full flex-col items-center justify-center gap-3 text-center"
                     style={{
                       transform: `scale(${pulsed ? 1.02 : 1})`,
                       transition: reduced ? 'none' : 'transform 240ms var(--ease-in-out)',
@@ -343,6 +348,13 @@ export function SoftmaxRace() {
                     <span className="text-body tabular-nums text-text-secondary">
                       {formatRowPercent(data[0].probability)}
                     </span>
+                    <img
+                      src={withBasePath(`/projects/bird-species-cnn/gallery/${selectedBird.id}/confirm-320.webp`)}
+                      width={320}
+                      height={320}
+                      alt={`A second photograph of a ${selectedBird.common}, confirming the prediction`}
+                      className="h-[168px] w-[168px] rounded-sm object-cover"
+                    />
                   </div>
                 )}
               </>

@@ -10,16 +10,20 @@ output:
    softmax from a stock ImageNet VGG16 forward pass. Unchanged in shape from the first
    version of this script.
 2. The eight-species gallery: for every bird in SPECIES, a 96x96 thumbnail, a 320x320
-   photograph and its real top-16 softmax, plus a generated content/data/bird-gallery.ts
-   carrying attribution read live from the Wikimedia Commons API. No activation sprites and
-   no luminance matrix are written for gallery species; that stays the robin's alone, per the
-   plan's assumption 10.
+   photograph, a second and different 320x320 confirmation photograph, and its real top-16
+   softmax, plus a generated content/data/bird-gallery.ts carrying attribution for both
+   photographs read live from the Wikimedia Commons API. No activation sprites and no
+   luminance matrix are written for gallery species; that stays the robin's alone, per the
+   plan's assumption 10. The confirmation photograph clears the same VGG16 forward-pass bar,
+   against the same expected label, as the first, and carries its own attribution, never the
+   first photo's.
 
 Run manually, once, by Pizon. Never wired into `npm run build` or any CI workflow, exactly
 like scripts/build-nyc-price-surface.mjs. Requires Python 3 with tensorflow, Pillow and
-numpy, and downloads two kinds of things on first use: nine source photographs (a few MB
-each, from Wikimedia Commons) and the ImageNet-pretrained VGG16 weights (~528 MB, cached by
-Keras at ~/.keras/models/ after the first run).
+numpy, and downloads two kinds of things on first use: sixteen source photographs, eight
+first photos plus eight confirmation photos (a few MB each, from Wikimedia Commons) and the
+ImageNet-pretrained VGG16 weights (~528 MB, cached by Keras at ~/.keras/models/ after the
+first run).
 
 Why stock ImageNet weights and not Pizon's own checkpoint: his fine-tuned weights are not in
 the public capstone repo (Capstone 3/Notebooks/saved_model.pb is an EfficientNetB0 graph with
@@ -49,6 +53,11 @@ higher, or the script raises rather than writing a crop nobody would call correc
 failing species by supplying a crop_box in SPECIES and rerunning, or by substituting one of
 the two approved species named at the bottom of that table. Never relabel a species to match
 whatever the model returned.
+
+The confirmation photo each species carries in `confirm_commons_file` clears the same bar,
+against the same expected label, with its own crop rather than the first photo's: a
+`confirm_crop_box` override on the Species entry, not a second crop_box field shared with the
+first photo.
 """
 
 from __future__ import annotations
@@ -145,6 +154,11 @@ class Species:
     # left, top, right, bottom in the source photo's own pixel coordinates. None means the
     # default rule applies: the largest centred square, deterministic, no eye required.
     crop_box: tuple[int, int, int, int] | None = None
+    # A second, different Commons file of the same species: the confirmation photo the
+    # prediction stage shows once the network has settled on this species. Verified against
+    # the same expected_label, cropped and attributed independently of commons_file above.
+    confirm_commons_file: str | None = None
+    confirm_crop_box: tuple[int, int, int, int] | None = None
 
 
 # The eight-species gallery. Every licence was confirmed Public domain against the live
@@ -153,6 +167,11 @@ class Species:
 # uses the default centred-square crop, which a probe run against the real photographs (all
 # seven) verified clears MIN_TOP1_PROBABILITY by a wide margin, so no override was needed for
 # any of them.
+#
+# confirm_commons_file is each species' second, different photograph: the one the prediction
+# stage shows once the network has settled. Every one was confirmed Public domain against the
+# live Commons API the same way, and a probe run against all eight of the default centred-square
+# crops verified they clear MIN_TOP1_PROBABILITY too, so no confirm_crop_box override was needed.
 #
 # Two approved substitutes exist if a species above ever stops verifying: American flamingo
 # ("Flamingo walking (38733359000).jpg", USFWS Pacific Southwest, ImageNet label "flamingo")
@@ -167,6 +186,7 @@ SPECIES: list[Species] = [
         expected_label="robin",
         commons_file="American robin (49781211678).jpg",
         crop_box=(805, 105, 2205, 1505),
+        confirm_commons_file="American robin (46946243164).jpg",
     ),
     Species(
         id="bald-eagle",
@@ -174,6 +194,7 @@ SPECIES: list[Species] = [
         scientific="Haliaeetus leucocephalus",
         expected_label="bald eagle",
         commons_file="Haliaeetus leucocephalus-tree-USFWS.jpg",
+        confirm_commons_file="USFWS bald eagle (23770875811).jpg",
     ),
     Species(
         id="american-goldfinch",
@@ -181,6 +202,7 @@ SPECIES: list[Species] = [
         scientific="Spinus tristis",
         expected_label="goldfinch",
         commons_file="American goldfinch (49882388693).jpg",
+        confirm_commons_file="USFWS american goldfinch (23226564663).jpg",
     ),
     Species(
         id="great-gray-owl",
@@ -188,6 +210,7 @@ SPECIES: list[Species] = [
         scientific="Strix nebulosa",
         expected_label="great grey owl",
         commons_file="Great gray owl (53298384180).jpg",
+        confirm_commons_file="A Great Gray Owl perched in a lodgepole pine tree (53482537206).jpg",
     ),
     Species(
         id="american-white-pelican",
@@ -195,6 +218,7 @@ SPECIES: list[Species] = [
         scientific="Pelecanus erythrorhynchos",
         expected_label="pelican",
         commons_file="American White Pelican Bear River MBR (51847214774).jpg",
+        confirm_commons_file="American White Pelican Bear River MBR (51846956603).jpg",
     ),
     Species(
         id="laysan-albatross",
@@ -202,6 +226,7 @@ SPECIES: list[Species] = [
         scientific="Phoebastria immutabilis",
         expected_label="albatross",
         commons_file="Laysan albatross, Credit USFWS Chris Swenson (5182342300).jpg",
+        confirm_commons_file="Laysan albatross, Credit USFWS Chris Swenson (5182342580).jpg",
     ),
     Species(
         id="great-egret",
@@ -209,6 +234,7 @@ SPECIES: list[Species] = [
         scientific="Ardea alba",
         expected_label="American egret",
         commons_file="USFWS great egret (23853294125).jpg",
+        confirm_commons_file="Great egret (53828514975).jpg",
     ),
     Species(
         id="ruby-throated-hummingbird",
@@ -216,6 +242,7 @@ SPECIES: list[Species] = [
         scientific="Archilochus colubris",
         expected_label="hummingbird",
         commons_file="Ruby-throated hummingbird (50038506407).jpg",
+        confirm_commons_file="Ruby-throated hummingbird (50036621428).jpg",
     ),
 ]
 
@@ -506,6 +533,8 @@ def build_gallery_species(species: Species, model, prefetched: tuple[Image.Image
     print(f"  {softmax_path.relative_to(REPO_ROOT)}: {softmax_path.stat().st_size / 1024:.2f} KB")
     print(f"  Verified: rank 1 is '{payload[0]['label']}' at {payload[0]['probability']:.4%}")
 
+    confirm = build_gallery_confirm_photo(species, model)
+
     return {
         "id": species.id,
         "common": species.common,
@@ -516,6 +545,60 @@ def build_gallery_species(species: Species, model, prefetched: tuple[Image.Image
         "license": attribution["license"],
         "sourceUrl": attribution["source_url"],
         "sourceFile": species.commons_file,
+        **confirm,
+    }
+
+
+def build_gallery_confirm_photo(species: Species, model) -> dict:
+    """Downloads, crops, classifies and writes one species' confirmation photo: a second,
+    different Commons file, verified against the same expected_label the first photo was.
+    Raises if the crop does not verify. Returns the confirm-prefixed attribution fields
+    content/data/bird-gallery.ts is generated from, none of them shared with the first
+    photo's own attribution."""
+    from tensorflow import keras
+    from tensorflow.keras.applications.vgg16 import preprocess_input, decode_predictions
+
+    if species.confirm_commons_file is None:
+        raise RuntimeError(f"{species.id}: no confirm_commons_file set for the confirmation photo.")
+
+    print(f"  Confirmation photo: {species.confirm_commons_file}")
+    attribution = resolve_commons_image(species.confirm_commons_file, cache_key=f"{species.id}-confirm")
+    photo = fetch_image(attribution["thumb_url"], f"{species.common} (confirmation)", cache_key=f"{species.id}-confirm")
+
+    crop_box = species.confirm_crop_box or default_crop_box(photo.size)
+    square = photo.crop(crop_box)
+
+    classify_input = square.resize((224, 224), Image.LANCZOS)
+    array = keras.utils.img_to_array(classify_input)
+    batch = preprocess_input(np.expand_dims(array, axis=0))
+    softmax = model.predict(batch, verbose=0)
+
+    _top1_class_id, top1_label, top1_probability = decode_predictions(softmax, top=1)[0][0]
+    top1_label = top1_label.replace("_", " ")
+    top1_probability = round(float(top1_probability), 6)
+
+    if top1_label != species.expected_label or top1_probability < MIN_TOP1_PROBABILITY:
+        raise RuntimeError(
+            f"{species.id}: the confirmation crop did not verify. Rank 1 was '{top1_label}' at "
+            f"{top1_probability:.4%}, expected '{species.expected_label}' at or above "
+            f"{MIN_TOP1_PROBABILITY:.0%}. Supply a confirm_crop_box for this species in SPECIES "
+            "and rerun, or substitute confirm_commons_file for a different Commons file."
+        )
+
+    species_dir = GALLERY_DIR / species.id
+    species_dir.mkdir(parents=True, exist_ok=True)
+
+    confirm_320 = square.resize((GALLERY_PHOTO_SIZE, GALLERY_PHOTO_SIZE), Image.LANCZOS)
+    save_webp_under_budget(confirm_320, species_dir / "confirm-320.webp", budget_bytes=30 * 1024)
+
+    print(f"  Confirmation verified: rank 1 is '{top1_label}' at {top1_probability:.4%}")
+
+    return {
+        "confirmTopProbability": top1_probability,
+        "confirmPhotographer": attribution["artist"],
+        "confirmLicense": attribution["license"],
+        "confirmSourceUrl": attribution["source_url"],
+        "confirmSourceFile": species.confirm_commons_file,
     }
 
 
@@ -537,7 +620,9 @@ def write_gallery_module(records: list[dict]) -> None:
  * licence and source URL below was read from the Commons API's imageinfo and extmetadata at
  * build time, not typed in by hand, and every expectedLabel/topProbability pair was verified
  * against a real VGG16(weights='imagenet') forward pass over that species' own cropped
- * photograph.
+ * photograph. The confirm-prefixed fields describe a second, different photograph of the same
+ * species, verified against the same expected label by its own forward pass and carrying its
+ * own attribution, never the first photo's.
  */
 
 export interface GalleryBird {{
@@ -556,6 +641,13 @@ export interface GalleryBird {{
   sourceUrl: string
   /** Source file on Wikimedia Commons, for reproducibility. */
   sourceFile: string
+  /** The confirmation photo's own probability for expectedLabel, from its own forward pass. */
+  confirmTopProbability: number
+  confirmPhotographer: string
+  confirmLicense: string
+  confirmSourceUrl: string
+  /** The confirmation photo's source file on Wikimedia Commons, for reproducibility. */
+  confirmSourceFile: string
 }}
 
 export const BIRD_GALLERY: readonly GalleryBird[] = [

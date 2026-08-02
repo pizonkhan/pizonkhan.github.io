@@ -9,16 +9,17 @@ import { ButtonLink } from '@/components/ui/ButtonLink'
 import { Portrait } from '@/components/ui/Portrait'
 
 /**
- * Loaded only once HeroKernelSweep decides the viewport is wide enough to show it, so its
- * code never counts against '/'s first-load JS on the route that has to fit a 105 KB budget.
+ * Loaded only once HeroNeighborFill decides the viewport is wide enough to show it, so its
+ * code never counts against '/'s first-load JS on the route that has to fit a 120 KB budget.
  */
-const KernelSweep = dynamic(() => import('@/components/viz/KernelSweep').then((mod) => mod.KernelSweep), {
-  ssr: false,
-})
+const NeighborFill = dynamic(
+  () => import('@/components/home/HeroNeighborFill').then((mod) => mod.HeroNeighborFill),
+  { ssr: false },
+)
 
 /**
  * The first viewport: name, role, one sentence of positioning, two calls to action, and,
- * beside it on wide screens, the kernel sweep glyph and the portrait. Below 1024px the right
+ * beside it on wide screens, the neighbor-fill glyph and the portrait. Below 1024px the right
  * column does not render and the portrait moves above the eyebrow instead.
  *
  * The intro reveal (headline clip-path mask, staggered fade-ups) is plain CSS animation
@@ -54,7 +55,7 @@ export function Hero() {
 
         <div className="hidden flex-col items-end gap-6 lg:flex">
           <div className="w-full max-w-[320px]">
-            <HeroKernelSweep />
+            <HeroNeighborFill />
           </div>
           <Portrait size={120} shape="circle" caption="Pizon Khan · NYC" priority />
         </div>
@@ -64,23 +65,23 @@ export function Hero() {
 }
 
 /**
- * Mounts KernelSweep only once a post-hydration matchMedia check confirms the viewport is
+ * Mounts HeroNeighborFill only once a post-hydration matchMedia check confirms the viewport is
  * wide enough to render the right column at all. The server renders nothing here, so there is
- * no hydration mismatch, and a mobile visitor never pays for the sweep's grid or its timers:
+ * no hydration mismatch, and a mobile visitor never pays for the glyph's markup or its timers:
  * it is decorative and dropped entirely below 1024px, not just CSS-hidden.
  */
-function HeroKernelSweep() {
-  const [showKernel, setShowKernel] = useState(false)
+function HeroNeighborFill() {
+  const [show, setShow] = useState(false)
 
   useEffect(() => {
     const query = window.matchMedia('(min-width: 1024px)')
-    setShowKernel(query.matches)
+    setShow(query.matches)
 
-    const onChange = (event: MediaQueryListEvent) => setShowKernel(event.matches)
+    const onChange = (event: MediaQueryListEvent) => setShow(event.matches)
     query.addEventListener('change', onChange)
     return () => query.removeEventListener('change', onChange)
   }, [])
 
-  if (!showKernel) return null
-  return <KernelSweep size={16} decorative />
+  if (!show) return null
+  return <NeighborFill />
 }

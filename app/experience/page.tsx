@@ -46,7 +46,7 @@ export default function ExperiencePage() {
       </Section>
       <div className="border-t border-border-subtle py-(--space-section)">
         <Container>
-          <ButtonLink href="/projects/">The work I can show you in full →</ButtonLink>
+          <ButtonLink href="/projects/">Some of my projects</ButtonLink>
         </Container>
       </div>
     </>

@@ -101,7 +101,7 @@ function RoleCard({
             kind={kind}
             revealed={visible}
             reduced={reduced}
-            className="h-16 w-16 shrink-0 sm:h-22 sm:w-22"
+            className="h-20 w-20 shrink-0 sm:h-28 sm:w-28"
           />
         )}
       </div>
