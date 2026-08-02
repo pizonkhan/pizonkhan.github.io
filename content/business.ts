@@ -88,7 +88,7 @@ export const business = {
       // Repo: the sidebar in src/app/(console)/console/layout.tsx. In order: Dashboard,
       // Reservations, Dispatch board, Messages, Customers, Accounts, Finance, Reports,
       // Fraud reviews, Drivers, Vehicle pricing, Global modifiers, Users, My account.
-      source: 'Counted in the project source, August 2026.',
+      source: 'Everything from the dispatch board to fraud reviews, in one sidebar.',
     },
     {
       value: '13',
@@ -304,8 +304,8 @@ export const business = {
       figureCaption: 'The path from an edit in the portal to a live quote on the site.',
       // Repo: same migration citation as pricing.body[1] above.
       figureSource:
-        'Structure of the pricing tables and their access policies, from the project source, '
-        + 'August 2026.',
+        'Rate models and fleet settings live in Postgres, gated by the same role checks used '
+        + 'everywhere else on the platform.',
       tableCaption: 'The three-step path from a portal edit to a live quote, in words.',
       steps: [
         {

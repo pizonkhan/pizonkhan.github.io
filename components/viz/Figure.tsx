@@ -18,6 +18,8 @@ export interface FigureProps {
   controls?: ReactNode
   /** The accessible equivalent. REQUIRED. Rendered inside <details>. */
   table: ReactNode
+  /** Disclosure summary text. Defaults to "Show the numbers"; override for a non-numeric figure. */
+  disclosureLabel?: string
   /** The visual itself. */
   children: ReactNode
   className?: string
@@ -27,7 +29,18 @@ export interface FigureProps {
  * The shared visualisation chrome. Every visual on the site is a child of this: it is chrome
  * and an accessibility contract only, and owns no scale, colour choice, data or interaction.
  */
-export function Figure({ eyebrow, title, caption, source, well, controls, table, children, className }: FigureProps) {
+export function Figure({
+  eyebrow,
+  title,
+  caption,
+  source,
+  well,
+  controls,
+  table,
+  disclosureLabel = 'Show the numbers',
+  children,
+  className,
+}: FigureProps) {
   return (
     <figure className={clsx('not-prose', className)}>
       <div className="viz-figure-header">
@@ -44,7 +57,7 @@ export function Figure({ eyebrow, title, caption, source, well, controls, table,
       <figcaption className="viz-footer">
         <span className="viz-source">{source}</span>
         <details className="viz-disclosure">
-          <summary className="viz-disclosure-label">Show the numbers</summary>
+          <summary className="viz-disclosure-label">{disclosureLabel}</summary>
           <div className="viz-table-wrap">{table}</div>
         </details>
       </figcaption>

@@ -53,6 +53,7 @@ export function PricingFlow({ className }: PricingFlowProps) {
       title={flow.figureTitle}
       caption={flow.figureCaption}
       source={flow.figureSource}
+      disclosureLabel="Show as text"
       well={{ height: 560, heightSm: 220 }}
       table={
         <FigureTable
