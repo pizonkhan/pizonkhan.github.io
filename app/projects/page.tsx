@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 
 export default function ProjectsPage() {
   return (
-    <Section eyebrow="Projects" heading="Every project page runs the work itself.">
+    <Section eyebrow="Projects" heading="These pages run the work.">
       <p className="text-lead max-w-(--measure-prose) text-text-secondary">
-        A repository link doesn&apos;t show how something behaves. These pages do: each one runs
+        A repository link says nothing about how something performs. Every project below runs
         the real pipeline, model or map in your browser.
       </p>
       <div className="mt-(--space-block) grid grid-cols-1 gap-6 sm:grid-cols-2">
