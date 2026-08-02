@@ -47,9 +47,9 @@ export function Hero() {
             {profile.summary}
           </p>
           <div className="hero-fade-up hero-delay-3 flex flex-wrap gap-4">
-            <ButtonLink href="/projects/">See the demonstrations</ButtonLink>
-            <ButtonLink href="/experience/" variant="ghost">
-              Experience
+            <ButtonLink href="/experience/">Resume</ButtonLink>
+            <ButtonLink href="/projects/" variant="ghost">
+              Projects
             </ButtonLink>
           </div>
         </div>

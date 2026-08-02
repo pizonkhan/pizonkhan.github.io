@@ -1,16 +1,18 @@
 import { Hero } from '@/components/home/Hero'
+import { EducationSummary } from '@/components/home/EducationSummary'
+import { WorkExperienceSummary } from '@/components/home/WorkExperienceSummary'
 import { ProofStrip } from '@/components/home/ProofStrip'
 import { DemonstrationsPreview } from '@/components/home/DemonstrationsPreview'
-import { CapabilityGrid } from '@/components/home/CapabilityGrid'
 import { ContactBlock } from '@/components/home/ContactBlock'
 
 export default function Home() {
   return (
     <>
       <Hero />
+      <EducationSummary />
+      <WorkExperienceSummary />
       <ProofStrip />
       <DemonstrationsPreview />
-      <CapabilityGrid />
       <ContactBlock />
     </>
   )
