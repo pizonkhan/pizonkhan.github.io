@@ -39,7 +39,6 @@ export function ProofStrip() {
               key={item.label}
               value={<AnimatedNumber value={item.value} format={item.format} />}
               label={item.label}
-              source="From the résumé."
             />
           ))}
         </div>

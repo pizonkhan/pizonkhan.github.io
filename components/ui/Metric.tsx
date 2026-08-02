@@ -5,7 +5,7 @@ export interface MetricProps {
   /** Rendered large. Pass a formatted string, or AnimatedNumber for a count-up variant. */
   value: ReactNode
   label: string
-  /** e.g. "From the resume." Every figure states where it came from. */
+  /** Optional provenance note, e.g. the notebook cell or dataset a figure was pulled from. */
   source?: string
   className?: string
 }
