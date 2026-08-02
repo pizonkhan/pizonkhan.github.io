@@ -32,7 +32,7 @@ export const site = {
     'Director of Credit Analytics in New York City. Project pages here are demonstrations: '
     + 'the pipeline, the model and the data run in front of you.',
   nav: [
-    { label: 'Work', href: '/projects/' },
+    { label: 'Projects', href: '/projects/' },
     { label: 'Experience', href: '/experience/' },
   ],
   /**
@@ -53,8 +53,4 @@ export const site = {
     png32: '/logo/png/pk-32.png',
     apple180: '/logo/png/pk-180.png',
   } satisfies SiteIcons,
-  integrityStatement:
-    'Every figure on this site comes from a public dataset or is explicitly labelled as '
-    + 'illustrative. No employer data, client names, model parameters or internal systems '
-    + 'appear anywhere.',
 } as const

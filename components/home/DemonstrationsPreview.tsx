@@ -19,10 +19,11 @@ export function DemonstrationsPreview() {
   return (
     <div className="py-(--space-section)" ref={ref}>
       <Container>
-        <Eyebrow>Work</Eyebrow>
-        <h2 className="text-h2 mt-2 text-text-primary">The project pages are the demonstration.</h2>
+        <Eyebrow>Projects</Eyebrow>
+        <h2 className="text-h2 mt-2 text-text-primary">Every project page runs the work itself.</h2>
         <p className="text-lead mt-4 max-w-(--measure-prose) text-text-secondary">
-          A link to a repo proves nothing. These pages run the work in front of you.
+          A repository link doesn&apos;t show how something behaves. These pages do: each one
+          runs the real pipeline, model or map in your browser.
         </p>
         <div className="mt-(--space-block) grid grid-cols-1 gap-6 sm:grid-cols-2">
           {projects.map((record, index) => (

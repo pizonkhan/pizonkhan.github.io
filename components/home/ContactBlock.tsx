@@ -2,17 +2,16 @@
 
 import clsx from 'clsx'
 import { profile } from '@/content/profile'
-import { site } from '@/content/site'
 import { useInViewOnce, usePrefersReducedMotion } from '@/lib/motion'
 import { Container } from '@/components/ui/Container'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Portrait } from '@/components/ui/Portrait'
 
 /**
- * Portrait, email, links and the integrity statement. The one place a recruiter is looking
- * for a face, and 240px is the largest size the source photograph honestly supports. No
- * motion beyond one section-level fade, kept in plain CSS: see components/home/Hero.tsx for
- * why '/' avoids framer-motion.
+ * Portrait, email and links. The one place a recruiter is looking for a face, and 240px is
+ * the largest size the source photograph honestly supports. No motion beyond one
+ * section-level fade, kept in plain CSS: see components/home/Hero.tsx for why '/' avoids
+ * framer-motion.
  */
 export function ContactBlock() {
   const [ref, hasEntered] = useInViewOnce<HTMLDivElement>()
@@ -57,9 +56,6 @@ export function ContactBlock() {
                 LinkedIn
               </a>
             </div>
-            <p className="mt-4 max-w-(--measure-prose) text-tick text-text-tertiary">
-              {site.integrityStatement}
-            </p>
           </div>
         </div>
       </Container>
