@@ -13,10 +13,10 @@ export const metadata: Metadata = {
 
 export default function ProjectsPage() {
   return (
-    <Section eyebrow="Projects" heading="These pages run the work.">
+    <Section eyebrow="Projects" heading="Some of my projects.">
       <p className="text-lead max-w-(--measure-prose) text-text-secondary">
-        A repository link says nothing about how something performs. Every project below runs
-        the real pipeline, model or map in your browser.
+        I like to keep learning: new modeling techniques, new tools, whatever is moving in
+        machine learning and engineering. These are a few examples of that in practice.
       </p>
       <div className="mt-(--space-block) grid grid-cols-1 gap-6 sm:grid-cols-2">
         {projects.map((record) => (
