@@ -1,5 +1,6 @@
 import { Hero } from '@/components/home/Hero'
 import { EducationSummary } from '@/components/home/EducationSummary'
+import { BusinessSummary } from '@/components/home/BusinessSummary'
 import { WorkExperienceSummary } from '@/components/home/WorkExperienceSummary'
 import { ProofStrip } from '@/components/home/ProofStrip'
 import { DemonstrationsPreview } from '@/components/home/DemonstrationsPreview'
@@ -10,6 +11,7 @@ export default function Home() {
     <>
       <Hero />
       <EducationSummary />
+      <BusinessSummary />
       <WorkExperienceSummary />
       <ProofStrip />
       <DemonstrationsPreview />

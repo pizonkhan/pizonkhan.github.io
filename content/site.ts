@@ -34,6 +34,7 @@ export const site = {
   nav: [
     { label: 'Projects', href: '/projects/' },
     { label: 'Experience', href: '/experience/' },
+    { label: 'Business', href: '/business/' },
   ],
   /**
    * The mark, alone. Not the lockup: the lockup carries a descriptor that is not the title on
