@@ -306,7 +306,6 @@ export const business = {
       figureSource:
         'Rate models and fleet settings live in Postgres, gated by the same role checks used '
         + 'everywhere else on the platform.',
-      tableCaption: 'The three-step path from a portal edit to a live quote, in words.',
       steps: [
         {
           id: 'edit',

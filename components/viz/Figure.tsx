@@ -16,8 +16,14 @@ export interface FigureProps {
   well: WellSize
   /** Optional controls rendered in the well's top-right (segmented control etc.). */
   controls?: ReactNode
-  /** The accessible equivalent. REQUIRED. Rendered inside <details>. */
-  table: ReactNode
+  /**
+   * The accessible equivalent, rendered inside <details>. Required for any figure whose visual
+   * encodes information beyond the text already on the page (a chart, a map, a scale). Omit it
+   * only when the visual itself already is the complete text content, e.g. a plain sequence of
+   * labelled steps: in that case a text-equivalent disclosure would just repeat what's already
+   * readable, which is not an equivalent, it's a duplicate.
+   */
+  table?: ReactNode
   /** Disclosure summary text. Defaults to "Show the numbers"; override for a non-numeric figure. */
   disclosureLabel?: string
   /** The visual itself. */
@@ -56,10 +62,12 @@ export function Figure({
       </div>
       <figcaption className="viz-footer">
         <span className="viz-source">{source}</span>
-        <details className="viz-disclosure">
-          <summary className="viz-disclosure-label">{disclosureLabel}</summary>
-          <div className="viz-table-wrap">{table}</div>
-        </details>
+        {table && (
+          <details className="viz-disclosure">
+            <summary className="viz-disclosure-label">{disclosureLabel}</summary>
+            <div className="viz-table-wrap">{table}</div>
+          </details>
+        )}
       </figcaption>
     </figure>
   )

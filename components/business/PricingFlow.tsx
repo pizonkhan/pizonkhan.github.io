@@ -2,7 +2,6 @@
 
 import type { CSSProperties } from 'react'
 import { Figure } from '@/components/viz/Figure'
-import { FigureTable } from '@/components/viz/FigureTable'
 import { business } from '@/content/business'
 import { useInViewOnce, usePrefersReducedMotion } from '@/lib/motion'
 
@@ -11,8 +10,6 @@ export interface PricingFlowProps {
 }
 
 const { flow } = business.pricing
-
-const tableRows = flow.steps.map((step) => ({ step: step.title, detail: step.body }))
 
 function cardStyle(index: number, entered: boolean, reduced: boolean): CSSProperties {
   if (reduced) return { opacity: 1, transform: 'none' }
@@ -40,7 +37,11 @@ function connectorStyle(connectorIndex: number, entered: boolean, reduced: boole
 /**
  * The pricing configuration flow: portal edit, database write gated by row-level security, next
  * quote. Replaces the old sample-fare bar chart. No dollar figure or fee name appears anywhere
- * here or in its table equivalent, only the three-step path a rate change takes.
+ * here, only the three-step path a rate change takes.
+ *
+ * No table equivalent: every word of the flow (step name and what happens) is already real
+ * text in the cards below, not an encoding inside a chart, so a text disclosure would just
+ * repeat it rather than stand in for it.
  */
 export function PricingFlow({ className }: PricingFlowProps) {
   const [ref, hasEntered] = useInViewOnce<HTMLDivElement>()
@@ -53,18 +54,7 @@ export function PricingFlow({ className }: PricingFlowProps) {
       title={flow.figureTitle}
       caption={flow.figureCaption}
       source={flow.figureSource}
-      disclosureLabel="Show as text"
       well={{ height: 560, heightSm: 220 }}
-      table={
-        <FigureTable
-          caption={flow.tableCaption}
-          columns={[
-            { key: 'step', label: 'Step' },
-            { key: 'detail', label: 'What happens' },
-          ]}
-          rows={tableRows}
-        />
-      }
       className={className}
     >
       <div ref={ref} className="flex h-full flex-col justify-center gap-2 sm:flex-row sm:items-stretch sm:gap-0">
