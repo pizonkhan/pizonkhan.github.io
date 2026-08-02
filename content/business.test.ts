@@ -80,10 +80,15 @@ describe('content/business.ts content integrity', () => {
 })
 
 describe('content/business.ts data shape', () => {
-  it('the six fare rows sum exactly to the total', () => {
-    const sum = business.pricing.fare.rows.reduce((total, row) => total + row.amount, 0)
-    expect(sum).toBe(business.pricing.fare.total)
-    expect(business.pricing.fare.total).toBe(250)
+  it('pricing.flow has exactly three steps, unique ids, and no dollar amount or fare line item', () => {
+    expect(business.pricing.flow.steps).toHaveLength(3)
+    const ids = business.pricing.flow.steps.map((step) => step.id)
+    expect(new Set(ids).size).toBe(ids.length)
+    for (const step of business.pricing.flow.steps) {
+      expect(step.title.trim().length).toBeGreaterThan(0)
+      expect(step.body.trim().length).toBeGreaterThan(0)
+      expect(step.body).not.toMatch(/\$[0-9]|Base fare|Gratuity|Tolls/)
+    }
   })
 
   it('has exactly three figures, each with a non-empty source', () => {

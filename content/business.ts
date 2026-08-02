@@ -48,10 +48,11 @@ export interface BusinessLink {
   note: string
 }
 
-export interface FareRow {
-  label: string
-  /** Whole US dollars. Illustrative, not a real rate. */
-  amount: number
+export interface PricingFlowStep {
+  id: string
+  title: string
+  /** One short sentence. No dollar amounts, no fee names, ever. */
+  body: string
 }
 
 export const business = {
@@ -120,6 +121,25 @@ export const business = {
   platform: {
     eyebrow: 'The platform',
     heading: 'One platform, three sides.',
+    intro: [
+      // Repo: three route surfaces (src/app/account/*, src/app/driver/*, src/app/(console)/console/*)
+      // share one Next.js app and one Supabase project; package.json has a single dependency tree,
+      // there is no separate repo per portal.
+      'All three sides are one Next.js application on one Supabase project, not three separate '
+      + 'codebases stitched together. Customers, chauffeurs and the office all read and write '
+      + 'against the same Postgres database, and the tables that matter have row-level security '
+      + 'turned on, so the database enforces who can see what, not just the page that renders it.',
+      // Repo: src/lib/auth/roles.ts declares five roles and the permission predicates (canManageUsers,
+      // canManagePricing, canAdminTeam, etc); its own header comment states those predicates are
+      // mirrored by SQL helper functions (is_developer(), can_admin_team(), etc) that the Postgres
+      // policies in supabase/migrations/*.sql call directly, confirmed against policies on
+      // pricing_configs, global_modifiers, invoices, transactions, chat_conversations, chat_messages,
+      // kb_entries, accounts and reservations.
+      'The five roles from the office side are the clearest example. What a dispatcher, an '
+      + 'administrator or an owner can do is defined once in the application and mirrored as SQL '
+      + 'policies in Postgres, so the same boundary is enforced twice, in two different layers, '
+      + 'rather than trusted to the front end alone.',
+    ] satisfies readonly string[],
     audiences: [
       {
         id: 'customers',
@@ -194,13 +214,21 @@ export const business = {
       {
         id: 'messages',
         title: 'Messages',
-        // Repo: /console/messages, real-time via Supabase Realtime, filters for needs-reply /
-        // active / bot / resolved, agent "Take over" and "Hand back to bot", and contact-form
-        // inquiries landing as threads in the same inbox.
+        // Repo: /console/messages, src/app/(console)/console/messages/realtime.tsx. ChatRealtime
+        // subscribes via supabase.channel(...).on('postgres_changes', ...) to the chat_messages and
+        // chat_conversations tables, filtered by conversation_id when viewing one thread. Its own
+        // comment: "Supabase Realtime respects RLS, so this only delivers rows the signed-in staff
+        // user can read." A 400ms setTimeout coalesces bursts before calling router.refresh(). Filters
+        // for needs-reply / active / bot / resolved, agent "Take over" and "Hand back to bot" per the
+        // existing figures/portal sourcing above.
         body:
-          'Every website chat and contact form lands in one inbox, live. Threads are filtered by '
-          + 'whether someone is waiting on a reply, and an agent can take over from the assistant '
-          + 'at any point.',
+          'Every website chat and contact form lands in one inbox, live. It runs on Supabase '
+          + 'Realtime: the console subscribes directly to the conversation and message tables, so a '
+          + 'new message shows up without polling, and a burst of them coalesces into a single '
+          + 'refresh instead of redrawing the page for each one. The same row-level security that '
+          + 'gates the rest of the console gates the subscription, so an agent only ever receives '
+          + 'updates for threads their role can already read. Threads are filtered by whether someone '
+          + 'is waiting on a reply, and an agent can take over from the assistant at any point.',
       },
       {
         id: 'finance',
@@ -245,41 +273,57 @@ export const business = {
     eyebrow: 'Pricing',
     heading: 'Every quote comes out of one engine.',
     body: [
-      // Repo: src/lib/pricing.ts (three pricing models, 13-step order), src/lib/routes.ts
-      // (Google Routes API), per-vehicle pricing_configs edited at /console/vehicles/[slug].
+      // Repo: src/lib/pricing.ts (rate models, one evaluation path shared by the booking site and
+      // the console), src/lib/routes.ts (Google Routes API for the real route distance).
       'Before, a price came from whoever picked up the phone. Now every quote, on the website or '
-      + 'in the office, comes out of the same engine. It takes the real route from Google, '
-      + 'applies the rate model configured for that vehicle, adds only the conditions that '
-      + 'actually apply to the trip, and returns one number.',
-      // Repo: pricing.ts invariants. Only the highest of peak / holiday / late-night applies.
-      // Gratuity is taken on the base fare and baked into the total, never a visible line item.
-      // Tolls are per-vehicle: Google's estimate times a class-aware premium, or a flat amount.
-      'The rules that matter are the ones that stop a price running away. Peak, holiday and '
-      + 'late-night never stack, the highest one wins. Gratuity is inside the number the customer '
-      + 'sees, not a line added at the end. Tolls are estimated per vehicle class, because a bus '
-      + 'does not pay what a sedan pays. The office changes any of it from the portal and the '
-      + 'website prices the next quote with it.',
+      + 'in the office, comes out of the same engine, using the same rate model and the same real '
+      + 'route from Google, whether a customer is looking at a screen or a dispatcher is booking a '
+      + 'call-in trip over the phone.',
+      // Repo: supabase/migrations/20260517145703_initial_schema.sql. pricing_configs is one JSONB
+      // row per vehicle (vehicle_slug primary key, model + every fee as JSONB); global_modifiers is
+      // a single row (id integer primary key default 1 check (id = 1)) for fleet-wide settings.
+      // Both `enable row level security`. The `_select` policies use `using (true)`, per the
+      // migration's own comment: "publicly SELECT-able so the marketing /quote page can render
+      // without a session." The `_write_owner_dev` policies restrict writes to
+      // `current_user_role() in ('owner','developer')`, matching canManagePricing() in
+      // src/lib/auth/roles.ts. The portal write surfaces are
+      // src/app/(console)/console/vehicles/[slug]/actions.ts and
+      // src/app/(console)/console/modifiers/actions.ts. There is no cache between a write and the
+      // next read: fetchPricingConfigs uses only React's request-scoped cache(), and the quote route
+      // queries the table directly.
+      'The rate models and every fee live in Postgres, not in a spreadsheet or a config file that '
+      + 'ships with a deploy. Each vehicle has its own pricing row, and there is one more row of '
+      + 'fleet-wide settings behind it. Row-level security means only the owner or developer role '
+      + 'can write to either, the same boundary enforced everywhere else on the platform, while the '
+      + 'booking site reads them on every quote. Change a rate in the portal and the very next '
+      + 'quote uses it. No redeploy, no waiting on a release.',
     ],
-    fare: {
-      figureEyebrow: 'SAMPLE FARE',
-      figureTitle: 'How one quote adds up',
-      figureCaption: 'Illustrative numbers on an invented trip, not a live quote.',
+    flow: {
+      figureEyebrow: 'PRICING CONFIG',
+      figureTitle: 'How a rate change reaches a quote',
+      figureCaption: 'The path from an edit in the portal to a live quote on the site.',
+      // Repo: same migration citation as pricing.body[1] above.
       figureSource:
-        'Sample figures chosen for this page. Real rates are configured per vehicle in the '
-        + 'portal and are not published here.',
-      tableCaption: 'Illustrative fare components for a sample trip, in US dollars.',
-      totalLabel: 'What the customer sees',
-      // Illustrative only. Deliberately round numbers that sum to a round total, so nobody can
-      // read a real rate card out of them.
-      rows: [
-        { label: 'Base fare', amount: 95 },
-        { label: 'Distance', amount: 62 },
-        { label: 'Late night', amount: 24 },
-        { label: 'Tolls', amount: 18 },
-        { label: 'Taxes and fees', amount: 21 },
-        { label: 'Gratuity, included', amount: 30 },
-      ] satisfies FareRow[],
-      total: 250,
+        'Structure of the pricing tables and their access policies, from the project source, '
+        + 'August 2026.',
+      tableCaption: 'The three-step path from a portal edit to a live quote, in words.',
+      steps: [
+        {
+          id: 'edit',
+          title: 'Edit',
+          body: 'An owner or developer changes a rate model or a fleet-wide setting in the portal.',
+        },
+        {
+          id: 'write',
+          title: 'Write',
+          body: 'Row-level security checks the role before the write reaches the table. Everyone else can read it, only that role can change it.',
+        },
+        {
+          id: 'quote',
+          title: 'Quote',
+          body: 'The booking site and the office read the same row on the very next quote. Nothing to redeploy.',
+        },
+      ] satisfies readonly PricingFlowStep[],
     },
   },
 
@@ -290,9 +334,15 @@ export const business = {
       // Repo: src/lib/anthropic.ts uses @anthropic-ai/sdk against a Claude model; src/lib/chat/
       // bot.ts builds a system prompt whose knowledge base is seeded and edited by the office,
       // and instructs the model to answer only from it.
+      // Repo: src/lib/chat/customer-actions.ts queries .from("kb_entries");
+      // supabase/migrations/20260614000000_add_live_chat.sql creates kb_entries with
+      // kb_entries_read_admin / kb_entries_write_admin RLS policies. bot.ts injects the KB content
+      // into the system prompt at request time, so an edit is live on the next message.
       'The chat on the website is built on Anthropic’s Claude API. It answers from a knowledge '
       + 'base the office controls, and only from that: coverage, vehicles, how booking works, '
-      + 'what is included.',
+      + 'what is included. That knowledge base is its own table in the same Postgres database as '
+      + 'everything else, and the bot reads it fresh on every message, so what the assistant is '
+      + 'allowed to say changes the moment the entries change, not on the next deploy.',
       // Repo: bot.ts exposes a single escalate_to_human tool and instructs the model to call it,
       // without writing an answer, for anything about a specific reservation, payment, refund,
       // change, cancellation or complaint, and never to invent prices, availability or policy.
@@ -311,7 +361,7 @@ export const business = {
   modernization: {
     eyebrow: 'Before and after',
     heading: 'Replacing the WordPress site.',
-    body:
+    body: [
       // Repo: README describes the project as a rebuild of newyorklimo.net, notes the production
       // target is that domain with the DNS cutover still pending, and that the domain currently
       // points at the old WordPress site.
@@ -320,6 +370,23 @@ export const business = {
       + 'instant quote off a real route, booking and payment online, a trip lookup, a customer '
       + 'account, an application flow for chauffeurs, and the whole office portal behind it. It '
       + 'runs at its own address while the domain still points at the old site.',
+      // Repo: README.md, "Live: https://newyorklimo-web.vercel.app (auto-deploys on push to main)"
+      // and "Hosting: Vercel (frontend + server actions)". src/app/api/stripe/webhook/route.ts is the
+      // webhook that reconciles charge state; the booking flow authorises with
+      // capture_method: "manual", which is what makes a stale hold a real customer-facing problem.
+      // vercel.json defines one cron: { path: "/api/cron/reservation-janitor", schedule: "0 6 * * *" },
+      // which is UTC, so it runs overnight in New York. The route's own header comment explains it
+      // reconciles reservations stuck in pending_payment past Stripe's PaymentIntent auto-expiry by
+      // checking each one's live PaymentIntent status and cancelling/releasing the hold rather than
+      // letting it expire silently, explicitly skipping already-succeeded ones for a human to review.
+      'The new site deploys to Vercel automatically on every push to main, both the front end and '
+      + 'the server actions behind it. Payments run through Stripe, and a webhook keeps the '
+      + 'database in step with what Stripe actually did on each charge, but a webhook can be '
+      + 'missed. So a Vercel Cron job runs overnight, checks every reservation still marked as '
+      + 'awaiting payment against Stripe’s own record of it, and releases the hold on anything that '
+      + 'never actually went through, instead of leaving a customer’s card authorized against a '
+      + 'booking nobody will ever confirm.',
+    ] satisfies readonly string[],
     links: [
       {
         label: 'The platform',
@@ -364,6 +431,9 @@ export const business = {
       // Repo: manual-capture authorisation, capture, refund, early-fraud-warning queue and a
       // chargeback evidence composer.
       'Payment authorisation, capture, refunds and chargeback evidence',
+      // Repo: vercel.json cron + src/app/api/cron/reservation-janitor/route.ts, see modernization
+      // sourcing above.
+      'A daily reconciliation job that checks stale payments against Stripe instead of trusting a webhook alone',
       'A pricing engine with a fixed order of operations',
       // Repo: bot.ts seeds the model's knowledge base from office-edited content and exposes a
       // single escalate_to_human tool for everything outside it. See assistant.body above.
@@ -371,6 +441,9 @@ export const business = {
       + 'handed to a person',
       'Analytics windowed in the operation’s own timezone',
       'Three separate authenticated portals on one codebase',
+      // Repo: src/app/(console)/console/messages/realtime.tsx, see portal.capabilities messages
+      // sourcing above.
+      'A live console inbox wired to Supabase Realtime, filtered through the same row-level security as everything else',
       'The design system, the marketing pages and the whole front end',
     ],
   },

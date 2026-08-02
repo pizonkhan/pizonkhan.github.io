@@ -11,7 +11,7 @@ import { ButtonLink } from '@/components/ui/ButtonLink'
 import { ChauffeurRouteVisual } from '@/components/business/ChauffeurRouteVisual'
 import { AudienceGrid } from '@/components/business/AudienceGrid'
 import { CapabilityList } from '@/components/business/CapabilityList'
-import { PriceLadder } from '@/components/business/PriceLadder'
+import { PricingFlow } from '@/components/business/PricingFlow'
 import { GlyphPlate } from '@/components/business/GlyphPlate'
 
 export const metadata: Metadata = {
@@ -68,7 +68,14 @@ export default function BusinessPage() {
       </Section>
 
       <Section eyebrow={business.platform.eyebrow} heading={business.platform.heading}>
-        <AudienceGrid />
+        <Prose>
+          {business.platform.intro.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </Prose>
+        <div className="mt-(--space-block)">
+          <AudienceGrid />
+        </div>
       </Section>
 
       <Section eyebrow={business.portal.eyebrow} heading={business.portal.heading}>
@@ -85,7 +92,7 @@ export default function BusinessPage() {
           ))}
         </Prose>
         <div className="mt-(--space-block)">
-          <PriceLadder />
+          <PricingFlow />
         </div>
       </Section>
 
@@ -105,7 +112,9 @@ export default function BusinessPage() {
 
       <Section eyebrow={business.modernization.eyebrow} heading={business.modernization.heading}>
         <Prose>
-          <p>{business.modernization.body}</p>
+          {business.modernization.body.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
         </Prose>
         <ul className="mt-(--space-block) grid grid-cols-1 gap-6 sm:grid-cols-2">
           {business.modernization.links.map((link) => (
