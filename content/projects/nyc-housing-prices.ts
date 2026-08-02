@@ -14,9 +14,9 @@ export const nycHousingPrices: ProjectRecord = {
     + 'ladder from a mean baseline to a tuned XGBoost regressor.',
   year: '2021',
   demonstration:
-    'The map below is not a picture of New York. It is 2,244 aggregated cells of the actual '
-    + 'listing data assembling themselves. The city’s shape is an artefact of where the '
-    + 'homes are.',
+    'The map below is the real city with 2,244 aggregated cells of 2019 listing data laid on '
+    + 'top. Three views switch the colour: how thick the listings are, what they were asking, '
+    + 'and what that worked out to per square foot.',
   glyph: 'grid',
   stack: ['Python', 'pandas', 'scikit-learn', 'XGBoost', 'MICE / IterativeImputer', 'seaborn'],
   dataset: {

@@ -12,7 +12,12 @@ import { useInViewOnce } from '@/lib/motion'
  * would pull them into this chunk and defeat the split.
  */
 const CHROME = {
-  centrepiece: { eyebrow: '59,350 LISTINGS', title: 'New York, drawn by its own listings', hasCaption: true, well: { ratio: '4 / 3' } },
+  centrepiece: {
+    eyebrow: '59,350 LISTINGS',
+    title: 'New York, coloured by what it was asking',
+    hasCaption: true,
+    well: { height: 560, heightSm: 620 },
+  },
   imputation: { eyebrow: 'MISSING DATA', title: 'What a mean fill does to a distribution', hasCaption: true, well: { ratio: '16 / 9' } },
   location: { eyebrow: 'LIST PRICE BY BOROUGH', title: 'Five boroughs, five distributions', hasCaption: true, well: { ratio: '16 / 9' } },
   approach: { eyebrow: 'MODEL LADDER', title: 'Eight rungs from the mean to XGBoost', hasCaption: true, well: { height: 420, heightSm: 360 } },
@@ -34,7 +39,7 @@ const PriceSurfaceLazy = dynamic(
     loading: () => (
       <div className="flex flex-col gap-4">
         <FigureSkeleton {...CHROME.centrepiece} />
-        <div aria-hidden="true" className="h-[425px] sm:h-[290px]" />
+        <div aria-hidden="true" className="h-[900px] sm:h-[413px]" />
       </div>
     ),
   },

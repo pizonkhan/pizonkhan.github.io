@@ -3,7 +3,7 @@
 import clsx from 'clsx'
 import { formatCount, formatUSD } from '@/lib/format'
 import type { BoroughStat } from '@/content/data/nyc-boroughs'
-import type { BoroughName, SurfaceView } from './PriceSurface'
+import type { BoroughName, SurfaceView } from './price-cells'
 
 export interface BoroughTableProps {
   boroughs: readonly BoroughStat[]
@@ -34,6 +34,9 @@ export function BoroughTable({ boroughs, view, focus, onFocus }: BoroughTablePro
             </th>
             <th scope="col" className="border-b border-border-subtle py-1.5 text-right font-normal">
               Median
+            </th>
+            <th scope="col" className="border-b border-border-subtle py-1.5 text-right font-normal">
+              Mean
             </th>
             <th scope="col" className="border-b border-border-subtle py-1.5 text-right font-normal">
               {view === 'perSqft' ? '$ / sqft' : 'P25 to P75'}
@@ -73,6 +76,14 @@ export function BoroughTable({ boroughs, view, focus, onFocus }: BoroughTablePro
                   )}
                 >
                   {formatUSD(borough.median)}
+                </td>
+                <td
+                  className={clsx(
+                    'px-2 py-2 text-right tabular-nums',
+                    selected ? 'text-text-secondary' : 'text-text-primary',
+                  )}
+                >
+                  {formatUSD(borough.mean)}
                 </td>
                 <td
                   className={clsx(

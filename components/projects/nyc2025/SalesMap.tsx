@@ -195,6 +195,10 @@ function selectedFilter(globalIndex: number | null): FilterSpecification {
   return ['all', ['!', ['has', 'point_count']], ['==', ['get', 'i'], globalIndex ?? -1]]
 }
 
+// Addition order, used by addSourceAndLayers. The removal loop in that function walks this in
+// reverse: a source with layers on it cannot be removed, and layers must come off before it.
+const LAYER_IDS = ['clusters', 'cluster-count', 'points', 'selected'] as const
+
 function BoroughFigureTableContent() {
   return (
     <div className="flex flex-col gap-4">
@@ -367,7 +371,7 @@ function SalesMapReady({ initialGroup }: { initialGroup: PropertyGroup }) {
     // setStyle's diff does not reliably drop a runtime-added source, and it can drop the layers
     // that sit on it, so this callback has to survive being handed a map that already has some
     // of what it is about to add. Layers first: a source with layers on it cannot be removed.
-    for (const id of ['selected', 'points', 'cluster-count', 'clusters']) {
+    for (const id of [...LAYER_IDS].reverse()) {
       if (map.getLayer(id)) map.removeLayer(id)
     }
     if (map.getSource('sales')) map.removeSource('sales')
@@ -447,6 +451,18 @@ function SalesMapReady({ initialGroup }: { initialGroup: PropertyGroup }) {
       },
     })
   }, [])
+
+  const ensureLayers = useCallback(
+    (map: maplibregl.Map) => {
+      // A style with no layers is one that has not finished loading. getLayersOrder is safe to
+      // call then; addSource and addLayer are not, they throw "Style is not done loading."
+      if (map.getLayersOrder().length === 0) return
+      if (map.getSource('sales') && LAYER_IDS.every((id) => map.getLayer(id))) return
+      addSourceAndLayers(map)
+      updateCanvasA11y(map)
+    },
+    [addSourceAndLayers, updateCanvasA11y],
+  )
 
   const attachHandlers = useCallback((map: maplibregl.Map) => {
     map.on('mouseenter', 'clusters', () => {
@@ -529,6 +545,7 @@ function SalesMapReady({ initialGroup }: { initialGroup: PropertyGroup }) {
       addSourceAndLayers(map)
       attachHandlers(map)
       updateCanvasA11y(map)
+      map.on('styledata', () => ensureLayers(map))
       setMapReady(true)
     })
 
@@ -538,7 +555,7 @@ function SalesMapReady({ initialGroup }: { initialGroup: PropertyGroup }) {
       map.remove()
       mapRef.current = null
     }
-  }, [addSourceAndLayers, attachHandlers, updateCanvasA11y])
+  }, [addSourceAndLayers, attachHandlers, updateCanvasA11y, ensureLayers])
 
   // Filter change (or the points arriving for the first time): rebuild the GeoJSON, push it to
   // the source, refresh the canvas's own description, and run the one-shot entry fade the first
@@ -555,34 +572,35 @@ function SalesMapReady({ initialGroup }: { initialGroup: PropertyGroup }) {
     if (!enteredRef.current && pointsState.status === 'ready') {
       enteredRef.current = true
       const reveal = () => {
-        map.setPaintProperty('clusters', 'circle-opacity', 1)
-        map.setPaintProperty('clusters', 'circle-stroke-opacity', 1)
-        map.setPaintProperty('points', 'circle-opacity', 1)
-        map.setPaintProperty('points', 'circle-stroke-opacity', 1)
+        if (map.getLayer('clusters')) {
+          map.setPaintProperty('clusters', 'circle-opacity', 1)
+          map.setPaintProperty('clusters', 'circle-stroke-opacity', 1)
+        }
+        if (map.getLayer('points')) {
+          map.setPaintProperty('points', 'circle-opacity', 1)
+          map.setPaintProperty('points', 'circle-stroke-opacity', 1)
+        }
       }
       if (reducedRef.current) reveal()
       else requestAnimationFrame(reveal)
     }
   }, [filtered, mapReady, pointsState.status, updateCanvasA11y])
 
-  // Theme change: setStyle wipes every custom source and layer, so re-add them and reapply the
-  // canvas's accessible description inside a one-shot styledata handler. The click and hover
-  // handlers do not need reattaching: MapLibre's layer-scoped `on()` matches by layer id at
-  // dispatch time rather than binding to the layer instance, so a handler registered once at
-  // mount starts matching again the moment a layer with that id exists, with no duplicate
-  // listeners accumulating across repeated theme toggles.
+  // Theme change: hand MapLibre the new style URL and let the styledata listener registered at
+  // load repair the layers. Not a one-shot handler armed here: setStyle fetches and diffs the new
+  // style asynchronously, so the old style stays live for the whole fetch, and styledata fires on
+  // any style mutation in the meantime, including a selection or reveal write landing inside that
+  // window. A one-shot would spend itself on one of those and never see the real swap. The click
+  // and hover handlers do not need reattaching: MapLibre's layer-scoped on() matches by layer id
+  // at dispatch time rather than binding to the layer instance, so a handler registered once at
+  // mount starts matching again the moment a layer with that id exists.
   useEffect(() => {
     const map = mapRef.current
     if (!map || !mapReady) return
     if (appliedThemeRef.current === theme) return
     appliedThemeRef.current = theme
-
     map.setStyle(STYLE_URL[theme])
-    map.once('styledata', () => {
-      addSourceAndLayers(map)
-      updateCanvasA11y(map)
-    })
-  }, [theme, mapReady, addSourceAndLayers, updateCanvasA11y])
+  }, [theme, mapReady])
 
   // Selection change: the accent ring is a layer filter, not a rebuild.
   useEffect(() => {

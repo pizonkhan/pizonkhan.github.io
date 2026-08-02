@@ -31,7 +31,7 @@ export interface ActivationStripProps {
  * Six real channel thumbnails for one VGG16 block, cropped from a 576x96 sprite sheet (six
  * 96x96 tiles) produced by a stock ImageNet VGG16 forward pass on the shipped source photo.
  * Owns no Figure wrapper: it is embedded inside LayerPyramid's well, the way
- * PriceSurfaceCanvas is embedded inside PriceSurface's.
+ * PriceCellMap is embedded inside PriceSurface's.
  */
 export function ActivationStrip({ block }: ActivationStripProps) {
   const asset = useBirdAsset<ActivationsAsset>('activations.json')
