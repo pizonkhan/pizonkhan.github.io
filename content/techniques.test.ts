@@ -11,8 +11,7 @@ import { profile, experience } from './profile'
 
 describe('content/techniques.ts', () => {
   it('every entry is scoped as a general method with no employer specifics', () => {
-    expect(techniques.length).toBeGreaterThanOrEqual(3)
-    expect(techniques.length).toBeLessThanOrEqual(5)
+    expect(techniques).toHaveLength(5)
     for (const note of techniques) {
       expect(note.scope).toBe('general-method')
       expect(note.containsEmployerSpecifics).toBe(false)
@@ -24,6 +23,14 @@ describe('content/techniques.ts', () => {
       for (const paragraph of note.body) {
         expect(paragraph).not.toMatch(/[0-9]/)
       }
+    }
+  })
+
+  it('every summary is present, digit-free, and at most 140 characters', () => {
+    for (const note of techniques) {
+      expect(note.summary.trim().length).toBeGreaterThan(0)
+      expect(note.summary).not.toMatch(/[0-9]/)
+      expect(note.summary.length).toBeLessThanOrEqual(140)
     }
   })
 

@@ -338,12 +338,20 @@ h1, h2, h3 {
  * components/viz/FigureSkeleton.tsx both build on this, so their box models cannot drift
  * apart from each other.
  */
+/*
+ * The header is a two-child flex row: the title block and the figure's own controls. When a
+ * figure passes a wide controls node, the four-option model selector in
+ * components/projects/nyc2025/ModelMechanisms.tsx is the case that measured this, the row
+ * cannot fit at 375 px and pushed the page 64 px wide. flex-wrap lets the controls drop to a
+ * second line under the title instead of overflowing sideways.
+ */
 .viz-figure-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .viz-caption {

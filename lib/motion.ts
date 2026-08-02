@@ -52,13 +52,20 @@ export function usePrefersReducedMotion(): boolean {
  * an async load resolves. A `useRef` object never re-runs the attach effect once the node
  * shows up late, so the observer would never be attached. A callback ref re-fires whenever
  * the node it's attached to changes, including from `null` to a real element.
+ *
+ * The default threshold is 0 because `IntersectionObserver` measures the intersection as a
+ * fraction of the target's own area, not the root's. A target taller than the root can never
+ * reach a high ratio: the ceiling is `rootHeight / targetHeight`. With the `-15%` bottom
+ * margin the root on a 375x700 phone is 595 px, so a 3900 px section tops out near 0.15 and
+ * any non-zero default leaves it hidden forever. The `-15%` margin is what holds the reveal
+ * back until the element is actually arriving, so the threshold does not need to.
  */
 export function useInViewOnce<T extends Element>(
   options?: { threshold?: number; rootMargin?: string },
 ): [React.RefCallback<T>, boolean] {
   const [node, setNode] = useState<T | null>(null)
   const [hasEntered, setHasEntered] = useState(false)
-  const threshold = options?.threshold ?? 0.25
+  const threshold = options?.threshold ?? 0
   const rootMargin = options?.rootMargin ?? '0px 0px -15% 0px'
   const ref = useCallback((next: T | null) => setNode(next), [])
 
