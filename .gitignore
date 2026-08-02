@@ -47,3 +47,6 @@ next-env.d.ts
 /Photos
 .DS_Store
 out/
+
+# Downloaded source data for offline generator scripts: never committed, see scripts/README notes
+/.data

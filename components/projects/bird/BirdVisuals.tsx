@@ -16,7 +16,7 @@ const CHROME = {
   pixels: { eyebrow: 'PIXELS', title: 'An image is a matrix of numbers', hasCaption: true, well: { ratio: '1 / 1' } },
   convolution: { eyebrow: 'CONVOLUTION', title: 'A filter is nine numbers', hasCaption: true, well: { ratio: '2 / 1' } },
   depth: { eyebrow: 'VGG16 DEPTH', title: 'Space shrinks, meaning accumulates', hasCaption: true, well: { height: 540, heightSm: 420 } },
-  decision: { eyebrow: 'SOFTMAX', title: '4,096 numbers become one bird', hasCaption: true, well: { height: 480, heightSm: 360 } },
+  decision: { eyebrow: 'SOFTMAX', title: 'Sixteen candidates, then one', hasCaption: true, well: { height: 920, heightSm: 520 } },
   transfer: { eyebrow: 'TRANSFER LEARNING', title: 'Five blocks, two states, one new head', hasCaption: true, well: { height: 340, heightSm: 300 } },
 } as const
 

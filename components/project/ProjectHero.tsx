@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { ProjectRecord } from '@/content/projects/types'
 import { Container } from '@/components/ui/Container'
 import { Eyebrow } from '@/components/ui/Eyebrow'
@@ -18,6 +19,13 @@ export function ProjectHero({ record }: ProjectHeroProps) {
         <Eyebrow>{`${record.year} · ${record.dataset.scale}`}</Eyebrow>
         <h1 className="text-h1 mt-3 text-text-primary">{record.title}</h1>
         <p className="text-lead mt-4 max-w-(--measure-prose) text-text-secondary">{record.tagline}</p>
+        {record.related && (
+          <p className="text-small mt-3">
+            <Link href={`/projects/${record.related.slug}/`} className="text-accent hover:text-accent-hover">
+              {record.related.label} &rarr;
+            </Link>
+          </p>
+        )}
         <div className="mt-6 max-w-(--measure-prose)">
           <Eyebrow>What moves on this page</Eyebrow>
           <p className="text-body mt-2 text-text-secondary">{record.demonstration}</p>

@@ -40,6 +40,25 @@ This is a real person's professional portfolio, and Pizon works at a bank.
 - Every figure in a visualisation is clearly synthetic or drawn from a public dataset.
 - Private and employer-adjacent repositories stay unlinked from this site.
 
+## Data pipelines
+
+Three offline scripts produce committed content this site renders. Each one is run manually,
+once, by Pizon; none is wired into `npm run build` or `.github/workflows/deploy.yml`, so a
+build never depends on Wikimedia Commons, NYC Open Data or a Python environment being
+reachable.
+
+| Script | Reads | Writes | Needs |
+| --- | --- | --- | --- |
+| `scripts/build-bird-assets.py` | Wikimedia Commons (photographs, licence and attribution via the API) | `content/data/bird-gallery.ts`, `public/projects/bird-species-cnn/gallery/<id>/*`, plus the featured robin's `bird-source.webp`, `luminance-28.json`, `activations.json` and activation sprites | Python 3 with `tensorflow`, `pillow`, `numpy`, and the ImageNet-pretrained VGG16 weights, cached locally after the first run |
+| `scripts/build-nyc-sales-2025.mjs` | NYC Open Data's `w2pb-icbu`, downloaded to a gitignored `.data/` directory | `content/data/nyc-2025-sales.ts`, `content/data/nyc-2025-neighborhoods.ts`, `public/projects/nyc-home-sales-2025/points.json` and its five per-borough detail shards | Node only, no third-party package |
+| `scripts/train-nyc-sales-2025.py` | The same CSV `build-nyc-sales-2025.mjs` downloads | `content/data/nyc-2025-models.ts` | Python with `numpy`, `pandas`, `scikit-learn`; `xgboost` is optional |
+
+Every script prints what it did, including the counts a filter step removed, so its output can
+be checked against the numbers quoted on the page rather than trusted blindly. Each script's own
+header comment carries the exact download command and the isolated-environment setup for its
+language. Rerunning one against a newer data pull is a manual act and a new commit, not a
+scheduled job.
+
 ## Asset prep
 
 ### Portrait

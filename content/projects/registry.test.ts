@@ -1,12 +1,23 @@
 import { describe, expect, it } from 'vitest'
 import { projects, getProject } from './index'
 import type { ProjectRecord } from './types'
+import { SNAPSHOT, CITYWIDE_2025 } from '@/content/data/nyc-2025-sales'
+import { WINNER } from '@/content/data/nyc-2025-models'
+import { formatCount, formatUSD } from '@/lib/format'
 
-const ALLOWED_LINK_HOSTS = ['https://github.com/pizonkhan/', 'https://www.kaggle.com/']
+const ALLOWED_LINK_HOSTS = [
+  'https://github.com/pizonkhan/',
+  'https://www.kaggle.com/',
+  'https://data.cityofnewyork.us/',
+]
 
 describe('content/projects registry', () => {
-  it('holds exactly the two wave-1 records, in a stable order', () => {
-    expect(projects.map((p) => p.slug)).toEqual(['nyc-housing-prices', 'bird-species-cnn'])
+  it('holds exactly the three records this site ships, in registry order', () => {
+    expect(projects.map((p) => p.slug)).toEqual([
+      'nyc-home-sales-2025',
+      'nyc-housing-prices',
+      'bird-species-cnn',
+    ])
   })
 
   it('getProject resolves a known slug and returns undefined for an unknown one', () => {
@@ -16,12 +27,16 @@ describe('content/projects registry', () => {
     expect(getProject('does-not-exist')).toBeUndefined()
   })
 
-  it('has both records live now that wave 2 has shipped its route', () => {
+  it('all three records are live', () => {
     const live = projects.filter((p) => p.status === 'live')
     const planned = projects.filter((p) => p.status === 'planned')
-    expect(live).toHaveLength(2)
+    expect(live).toHaveLength(3)
     expect(planned).toHaveLength(0)
-    expect(live.map((p) => p.slug)).toEqual(['nyc-housing-prices', 'bird-species-cnn'])
+    expect(live.map((p) => p.slug)).toEqual([
+      'nyc-home-sales-2025',
+      'nyc-housing-prices',
+      'bird-species-cnn',
+    ])
   })
 
   it.each(projects)('$slug has no employer, company or client field', (record) => {
@@ -65,6 +80,35 @@ describe('content/projects registry', () => {
     for (const value of strings) {
       expect(value).not.toContain('—')
     }
+  })
+
+  it.each(projects.filter((p) => p.related))(
+    '$slug: related.slug resolves to a live record',
+    (record) => {
+      const target = getProject(record.related!.slug)
+      expect(target, `${record.slug} -> related.slug "${record.related!.slug}"`).toBeDefined()
+      expect(target?.status).toBe('live')
+    },
+  )
+
+  it('the two NYC records point at each other with opposite directions', () => {
+    const sales2025 = getProject('nyc-home-sales-2025')
+    const housing2019 = getProject('nyc-housing-prices')
+    expect(sales2025?.related?.slug).toBe('nyc-housing-prices')
+    expect(sales2025?.related?.direction).toBe('earlier')
+    expect(housing2019?.related?.slug).toBe('nyc-home-sales-2025')
+    expect(housing2019?.related?.direction).toBe('later')
+  })
+
+  it('nyc-home-sales-2025 headline figures are read straight from the generated modules', () => {
+    const record = getProject('nyc-home-sales-2025')
+    expect(record).toBeDefined()
+    const bySales = record!.headlineFigures.find((f) => f.label === 'Recorded sales, 2025')
+    const byMedian = record!.headlineFigures.find((f) => f.label === 'Citywide median sale price')
+    const byWinner = record!.headlineFigures.find((f) => f.label === 'Test MAE, winning model')
+    expect(bySales?.value).toBe(formatCount(SNAPSHOT.points))
+    expect(byMedian?.value).toBe(formatUSD(CITYWIDE_2025.median))
+    expect(byWinner?.value).toBe(formatUSD(WINNER.mae))
   })
 })
 

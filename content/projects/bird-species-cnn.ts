@@ -15,8 +15,9 @@ export const birdSpeciesCnn: ProjectRecord = {
   year: '2021',
   demonstration:
     'Eight real checkpoints grow left to right below, from a network that has never seen '
-    + 'an edge to a VGG16 backbone fine-tuned four blocks deep. The distance between the '
-    + 'first bar and the last is the entire argument for convolution.',
+    + 'an edge to a VGG16 backbone fine-tuned four blocks deep. Further down, pick any of '
+    + 'eight bird photographs and watch a real softmax narrow from sixteen candidates to '
+    + 'the one the network commits to.',
   glyph: 'kernel',
   stack: [
     'Python',
@@ -113,11 +114,16 @@ export const birdSpeciesCnn: ProjectRecord = {
       body: [
         'Whatever the backbone, the pattern at the top is the same: flatten the last '
           + 'feature map into one long vector, run it through one or two dense layers, '
-          + 'then a softmax layer that turns raw scores into 315 probabilities that sum to '
+          + 'then a softmax layer that turns raw scores into probabilities that sum to '
           + 'one. In VGG16 that vector is 25,088 numbers wide, compressed to 4,096, then '
-          + '4,096 again, before the final 315-way layer picks a winner. It is matrix '
-          + 'multiplication all the way down; the softmax is what forces the network to '
-          + 'commit to exactly one bird.',
+          + '4,096 again, before the final layer picks a winner. No layer before that '
+          + 'last one produces a class score of any kind: everything upstream is a '
+          + 'feature map, and a probability only exists once the softmax has run.',
+        'The figure below makes that concrete rather than asserting it. Pick any of '
+          + 'eight public-domain bird photographs and watch one real forward pass narrow '
+          + 'from sixteen candidate classes to eight, then three, then the one it '
+          + 'committed to. Every number at every stage is that same softmax output, '
+          + 'filtered down, never a guess at what an earlier layer believes.',
       ],
     },
     {
@@ -176,5 +182,7 @@ export const birdSpeciesCnn: ProjectRecord = {
   ],
   dataStatement:
     'Public Kaggle 100+ bird species photo set, 315 species. Model figures are printed '
-    + 'notebook outputs; example activations come from a stock ImageNet VGG16 forward pass.',
+    + 'notebook outputs; example activations come from a stock ImageNet VGG16 forward pass. '
+    + 'The eight gallery photographs are separate public-domain works, each credited by '
+    + 'photographer and licence inside that figure.',
 }

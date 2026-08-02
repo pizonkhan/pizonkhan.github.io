@@ -176,4 +176,9 @@ export const nycHousingPrices: ProjectRecord = {
   ],
   dataStatement:
     'Public Zillow 2019 NYC data. Cells with fewer than four listings are omitted.',
+  related: {
+    slug: 'nyc-home-sales-2025',
+    label: "Rebuilt on the city's own 2025 sale records",
+    direction: 'later',
+  },
 }

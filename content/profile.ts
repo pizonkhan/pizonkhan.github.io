@@ -9,6 +9,8 @@ export interface Role {
   start: string
   end: string
   highlights: string[]
+  /** Overrides the employer's location for this specific role, when it differs (e.g. remote). */
+  location?: string
 }
 
 export interface Employer {
@@ -54,6 +56,9 @@ export const experience: Employer[] = [
         title: 'Director, Credit Analytics',
         start: 'Jul 2025',
         end: 'Present',
+        // Confirmed directly by Pizon: this role is New York based and fully remote. The
+        // employer-level Stamford, CT address predates this arrangement and does not apply here.
+        location: 'New York, NY · Remote',
         highlights: [
           'Architected and own the Credit Data Mart, the bank’s system of record for credit reporting: conformed loan-, customer- and collateral-level tables fed by 15+ Snowflake pipelines producing daily and monthly point-in-time snapshots, consumed by 10+ enterprise teams (~100 users) and published each month-end as the basis for earnings and shareholder reporting.',
           'Built automated data-quality and anomaly-detection pipelines that surface outliers, inconsistencies and reconciliation breaks before publication, cutting month-end remediation from 1–2 weeks to under 1 week.',

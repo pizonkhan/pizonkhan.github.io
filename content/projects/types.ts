@@ -53,6 +53,21 @@ export interface ProjectSectionBlock {
   hasVisual?: boolean
 }
 
+/**
+ * A sibling project this record supersedes or continues. Rendered by ProjectHero as one link
+ * under the tagline. `slug` must resolve in the registry; registry.test.ts asserts it.
+ *
+ * This exists because ProjectSectionBlock.body is plain text and cannot carry a link, and a
+ * page that silently replaces an older analysis without pointing at it is not honest.
+ */
+export interface ProjectRelation {
+  slug: string
+  /** Link text, in Pizon's voice. States what the other page is, not that it is "related". */
+  label: string
+  /** 'earlier': the other page came first. 'later': the other page supersedes this one. */
+  direction: 'earlier' | 'later'
+}
+
 export interface ProjectRecord {
   slug: string
   status: ProjectStatus
@@ -71,4 +86,5 @@ export interface ProjectRecord {
   links: ProjectLink[]
   /** Rendered in the footer of every figure on the page. */
   dataStatement: string
+  related?: ProjectRelation
 }

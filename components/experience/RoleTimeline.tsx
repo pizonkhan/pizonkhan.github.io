@@ -70,7 +70,7 @@ function RoleCard({ employer, role, index }: RoleEntry & { index: number }) {
       </p>
       <h3 className="text-h3 mt-1 text-text-primary">{role.title}</h3>
       <p className="text-small text-text-secondary">
-        {employer.company} · {employer.location}
+        {employer.company} · {role.location ?? employer.location}
       </p>
       <ul className="mt-3 flex flex-col gap-2">
         {role.highlights.map((point) => (
