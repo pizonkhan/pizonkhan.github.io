@@ -21,6 +21,7 @@ export function ContactBlock() {
   return (
     <div
       ref={ref}
+      data-section="contact"
       className={clsx(
         'py-(--space-section) transition-opacity duration-(--dur-slow) ease-out',
         visible ? 'opacity-100' : 'opacity-0',

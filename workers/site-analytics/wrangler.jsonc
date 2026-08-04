@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pk-site-analytics",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  // Cloudflare's own request logging is disabled deliberately: no IP address and no raw
+  // user agent may be retained anywhere, and Workers Logs would otherwise keep both.
+  "observability": {
+    "enabled": false
+  },
+  "vars": {
+    "ALLOWED_ORIGINS": "https://pizonkhan.github.io,http://localhost:3000,http://127.0.0.1:3000"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pk-site-analytics",
+      // Placeholder. Written for real by `wrangler d1 create pk-site-analytics --update-config`
+      // in Task 6, once a Cloudflare account exists. Local dev and tests use an ephemeral
+      // local D1 and never read this value.
+      "database_id": "REPLACE_WITH_WRANGLER_D1_CREATE_OUTPUT",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": {
+    "crons": ["17 1 * * *"]
+  }
+}

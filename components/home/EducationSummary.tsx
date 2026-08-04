@@ -10,7 +10,7 @@ import { EducationList } from '@/components/experience/EducationList'
  */
 export function EducationSummary() {
   return (
-    <SectionFade>
+    <SectionFade section="education">
       <Container>
         <Eyebrow>Education</Eyebrow>
         <h2 className="text-h2 mt-2 text-text-primary">Where I studied.</h2>

@@ -9,12 +9,14 @@ const ALLOWED_LINK_HOSTS = [
   'https://github.com/pizonkhan/',
   'https://www.kaggle.com/',
   'https://data.cityofnewyork.us/',
+  'https://developers.cloudflare.com/',
 ]
 
 describe('content/projects registry', () => {
-  it('holds exactly the three records this site ships, in registry order', () => {
+  it('holds exactly the four records this site ships, in registry order', () => {
     expect(projects.map((p) => p.slug)).toEqual([
       'nyc-home-sales-2025',
+      'site-analytics',
       'nyc-housing-prices',
       'bird-species-cnn',
     ])
@@ -27,13 +29,14 @@ describe('content/projects registry', () => {
     expect(getProject('does-not-exist')).toBeUndefined()
   })
 
-  it('all three records are live', () => {
+  it('all four records are live', () => {
     const live = projects.filter((p) => p.status === 'live')
     const planned = projects.filter((p) => p.status === 'planned')
-    expect(live).toHaveLength(3)
+    expect(live).toHaveLength(4)
     expect(planned).toHaveLength(0)
     expect(live.map((p) => p.slug)).toEqual([
       'nyc-home-sales-2025',
+      'site-analytics',
       'nyc-housing-prices',
       'bird-species-cnn',
     ])

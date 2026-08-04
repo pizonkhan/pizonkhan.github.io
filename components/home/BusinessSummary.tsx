@@ -12,7 +12,7 @@ import { GlyphPlate } from '@/components/business/GlyphPlate'
  */
 export function BusinessSummary() {
   return (
-    <SectionFade>
+    <SectionFade section="business">
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

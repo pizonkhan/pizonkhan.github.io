@@ -17,7 +17,7 @@ export function DemonstrationsPreview() {
   const visible = reduced || hasEntered
 
   return (
-    <div className="py-(--space-section)" ref={ref}>
+    <div className="py-(--space-section)" ref={ref} data-section="demonstrations">
       <Container>
         <Eyebrow>Projects</Eyebrow>
         <h2 className="text-h2 mt-2 text-text-primary">Some of my projects.</h2>

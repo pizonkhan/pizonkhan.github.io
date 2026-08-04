@@ -1,10 +1,11 @@
+import Link from 'next/link'
 import { profile } from '@/content/profile'
 import { Wordmark } from '@/components/site/Wordmark'
 
 /** Wordmark and contact links, rendered on every page. */
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border-subtle">
+    <footer data-section="site-footer" className="border-t border-border-subtle">
       <div className="mx-auto flex max-w-(--width-content) flex-wrap items-center justify-between gap-6 px-6 py-10 sm:px-8">
         <Wordmark height={28} />
         <div className="flex flex-wrap gap-6 text-small text-text-secondary">
@@ -27,6 +28,9 @@ export function SiteFooter() {
           >
             LinkedIn
           </a>
+          <Link href="/projects/site-analytics/" className="hover:text-text-primary">
+            How this site counts visits
+          </Link>
         </div>
       </div>
     </footer>

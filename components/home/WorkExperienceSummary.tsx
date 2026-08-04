@@ -43,7 +43,7 @@ function CondensedRoles() {
  */
 export function WorkExperienceSummary() {
   return (
-    <SectionFade>
+    <SectionFade section="work-experience">
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

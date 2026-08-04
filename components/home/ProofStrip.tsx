@@ -31,7 +31,7 @@ const PROOF = [
 /** Three résumé figures, count up on first view. The label never animates. */
 export function ProofStrip() {
   return (
-    <div className="py-(--space-section)">
+    <div data-section="proof" className="py-(--space-section)">
       <Container>
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-3">
           {PROOF.map((item) => (

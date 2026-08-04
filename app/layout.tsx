@@ -7,6 +7,7 @@ import { SkipLink } from '@/components/site/SkipLink'
 import { SiteHeader } from '@/components/site/SiteHeader'
 import { SiteFooter } from '@/components/site/SiteFooter'
 import { ThemeScript } from '@/components/site/ThemeScript'
+import { Analytics } from '@/components/analytics/Analytics'
 
 const inter = Inter({
   variable: '--font-sans',
@@ -62,6 +63,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           {children}
         </main>
         <SiteFooter />
+        <Analytics />
       </body>
     </html>
   )

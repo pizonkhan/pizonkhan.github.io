@@ -55,3 +55,9 @@ out/
 /.claude
 /CLAUDE.md
 /docs/plans
+
+# Worker-local tooling: the sibling package under workers/site-analytics installs and
+# runs on its own, see docs/plans/site-analytics-pipeline-and-dashboard.md Assumption 3.
+workers/*/node_modules
+workers/*/.wrangler
+.env.local

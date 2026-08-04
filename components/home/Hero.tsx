@@ -33,7 +33,7 @@ const HeroGlyph = dynamic(
  */
 export function Hero() {
   return (
-    <section className="border-b border-border-subtle">
+    <section data-section="hero" className="border-b border-border-subtle">
       <Container className="grid grid-cols-1 gap-10 py-(--space-section) lg:grid-cols-[2fr_1fr] lg:items-start lg:gap-16">
         <div className="order-2 flex flex-col gap-6 lg:order-1">
           <div className="hero-fade-up">

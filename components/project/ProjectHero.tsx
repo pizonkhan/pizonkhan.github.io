@@ -14,7 +14,7 @@ export interface ProjectHeroProps {
  */
 export function ProjectHero({ record }: ProjectHeroProps) {
   return (
-    <div className="border-b border-border-subtle py-(--space-block)">
+    <div data-section="project-hero" className="border-b border-border-subtle py-(--space-block)">
       <Container>
         <Eyebrow>{`${record.year} · ${record.dataset.scale}`}</Eyebrow>
         <h1 className="text-h1 mt-3 text-text-primary">{record.title}</h1>

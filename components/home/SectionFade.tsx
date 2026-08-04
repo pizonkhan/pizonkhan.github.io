@@ -10,7 +10,7 @@ import { useInViewOnce, usePrefersReducedMotion } from '@/lib/motion'
  * the client bundle. No framer-motion and no shared Section wrapper: see components/home/Hero.tsx
  * for why this route pays for neither.
  */
-export function SectionFade({ children }: { children: ReactNode }) {
+export function SectionFade({ children, section }: { children: ReactNode; section?: string }) {
   const [ref, hasEntered] = useInViewOnce<HTMLDivElement>()
   const reduced = usePrefersReducedMotion()
   const visible = reduced || hasEntered
@@ -18,6 +18,7 @@ export function SectionFade({ children }: { children: ReactNode }) {
   return (
     <div
       ref={ref}
+      data-section={section}
       className={clsx(
         'py-(--space-section) transition-opacity duration-(--dur-slow) ease-out',
         visible ? 'opacity-100' : 'opacity-0',

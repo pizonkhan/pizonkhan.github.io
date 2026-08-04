@@ -10,7 +10,7 @@ export interface ProjectMetaProps {
 /** Stack pills, dataset provenance, and the public links rail that closes out a project write-up. */
 export function ProjectMeta({ record }: ProjectMetaProps) {
   return (
-    <div className="border-t border-border-subtle py-(--space-section)">
+    <div data-section="project-meta" className="border-t border-border-subtle py-(--space-section)">
       <Container>
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-3">
           <div>
