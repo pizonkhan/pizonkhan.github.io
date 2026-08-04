@@ -33,6 +33,10 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run lint
       - run: npm run build
+        env:
+          # Public by design (see lib/analytics/config.ts): baked into the client bundle,
+          # not a secret. Points at the Worker deployed from workers/site-analytics/.
+          NEXT_PUBLIC_ANALYTICS_ENDPOINT: https://pk-site-analytics.pizonkhan.workers.dev
 
       - uses: actions/configure-pages@v5
 
