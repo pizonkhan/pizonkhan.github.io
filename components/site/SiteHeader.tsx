@@ -7,9 +7,9 @@ import { ThemeToggle } from '@/components/site/ThemeToggle'
 export function SiteHeader() {
   return (
     <header data-section="site-header" className="sticky top-0 z-40 border-b border-border-subtle bg-surface-0/90 backdrop-blur">
-      <div className="mx-auto flex max-w-(--width-content) items-center justify-between px-6 py-3 sm:px-8">
+      <div className="mx-auto flex max-w-(--width-content) items-center justify-between px-4 py-3 sm:px-8">
         <Wordmark height={32} asLink />
-        <nav aria-label="Primary" className="flex items-center gap-6">
+        <nav aria-label="Primary" className="flex items-center gap-2 sm:gap-6">
           {site.nav.map((item) => (
             <Link
               key={item.href}

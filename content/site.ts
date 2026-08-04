@@ -35,6 +35,7 @@ export const site = {
     { label: 'Projects', href: '/projects/' },
     { label: 'Experience', href: '/experience/' },
     { label: 'Business', href: '/business/' },
+    { label: 'Analytics', href: '/projects/site-analytics/' },
   ],
   /**
    * The mark, alone. Not the lockup: the lockup carries a descriptor that is not the title on
