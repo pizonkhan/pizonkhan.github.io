@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { site } from '@/content/site'
 import { experienceIntro } from '@/content/experience/intro'
+import { withBasePath } from '@/lib/base-path'
 import { Section } from '@/components/ui/Section'
 import { Container } from '@/components/ui/Container'
 import { Eyebrow } from '@/components/ui/Eyebrow'
@@ -30,6 +31,12 @@ export default function ExperiencePage() {
           <p className="text-lead mt-4 max-w-(--measure-prose) text-text-secondary">
             {experienceIntro.paragraph}
           </p>
+          <a
+            href={withBasePath('/resume/pizon-khan-resume.pdf')}
+            className="mt-4 inline-flex items-center gap-1 text-small font-medium text-accent transition-colors duration-(--dur-fast) hover:text-accent-hover"
+          >
+            Download as PDF <span aria-hidden="true">&darr;</span>
+          </a>
         </Container>
       </div>
       <Section id="roles" className="scroll-mt-24" eyebrow="Roles" heading="Every role, most recent first.">
