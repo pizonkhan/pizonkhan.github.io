@@ -16,7 +16,7 @@ export function Metric({ value, label, source, className }: MetricProps) {
     <div className={clsx('flex flex-col gap-1', className)}>
       <div className="text-metric text-text-primary">{value}</div>
       <div className="text-small text-text-secondary">{label}</div>
-      {source && <div className="text-tick text-text-tertiary">{source}</div>}
+      {source && <div className="text-tick break-words text-text-tertiary">{source}</div>}
     </div>
   )
 }

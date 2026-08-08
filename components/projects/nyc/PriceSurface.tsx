@@ -335,7 +335,7 @@ function ViewControl({ value, onChange }: { value: SurfaceView; onChange: (v: Su
             type="button"
             {...getRadioProps(option.value)}
             className={clsx(
-              'rounded-sm border px-2.5 py-1 text-small transition-colors duration-(--dur-fast)',
+              'whitespace-nowrap rounded-sm border px-2 py-1 text-small transition-colors duration-(--dur-fast)',
               selected
                 ? 'border-text-primary bg-text-primary text-surface-0'
                 : 'border-border-strong bg-surface-1 text-text-secondary hover:bg-surface-2',

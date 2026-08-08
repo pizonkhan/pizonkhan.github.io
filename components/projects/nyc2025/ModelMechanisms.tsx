@@ -130,7 +130,7 @@ export function ModelMechanisms({ initialMechanism = 'linear' }: ModelMechanisms
       source="Illustrative. Synthetic values chosen to show each mechanism, not measurements from the sales data."
       well={{ ratio: '4 / 3', ratioSm: '16 / 9' }}
       controls={
-        <div role="radiogroup" aria-label="Mechanism" className="flex gap-1" {...mechanismGroupProps}>
+        <div role="radiogroup" aria-label="Mechanism" className="flex flex-wrap gap-1" {...mechanismGroupProps}>
           {MECHANISM_OPTIONS.map((option) => {
             const selected = option.value === mechanism
             return (

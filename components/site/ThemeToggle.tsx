@@ -1,10 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import clsx from 'clsx'
 import { applyTheme, resolveInitialTheme, type ThemeName } from '@/lib/theme'
 
 /** Client toggle between light and dark. Writes localStorage and the data-theme attribute. */
-export function ThemeToggle() {
+export function ThemeToggle({ className }: { className?: string }) {
   const [theme, setTheme] = useState<ThemeName>('light')
 
   useEffect(() => {
@@ -25,7 +26,10 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-pressed={isDark}
       aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border-subtle text-text-secondary transition-colors duration-(--dur-fast) hover:bg-surface-1"
+      className={clsx(
+        'inline-flex h-9 w-9 items-center justify-center rounded-md border border-border-subtle text-text-secondary transition-colors duration-(--dur-fast) hover:bg-surface-1',
+        className,
+      )}
     >
       {isDark ? (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">

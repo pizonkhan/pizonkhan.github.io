@@ -33,7 +33,7 @@ export function ScaleLegend({ colors, breakLabels, lowLabel, highLabel, highligh
           />
         ))}
       </div>
-      <div className="flex justify-between text-tick text-text-tertiary">
+      <div className="flex flex-wrap justify-between gap-x-2 gap-y-1 text-tick text-text-tertiary">
         <span>{lowLabel}</span>
         {breakLabels.map((label) => (
           <span key={label}>{label}</span>

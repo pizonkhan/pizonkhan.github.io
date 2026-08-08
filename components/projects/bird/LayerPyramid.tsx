@@ -86,7 +86,7 @@ export function LayerPyramid() {
                 type="button"
                 {...getRadioProps(String(block.block))}
                 className={clsx(
-                  'flex items-center justify-between rounded-sm border px-2 py-1.5 text-left text-tick transition-colors duration-(--dur-fast)',
+                  'flex flex-wrap items-center justify-between gap-x-1 rounded-sm border px-2 py-1.5 text-left text-tick transition-colors duration-(--dur-fast)',
                   isSelected ? 'border-text-primary bg-surface-1' : 'border-border-subtle bg-surface-1 hover:bg-surface-2',
                 )}
                 style={{
@@ -95,8 +95,8 @@ export function LayerPyramid() {
                   transition: reduced ? 'none' : `width 480ms var(--ease-out) ${delay}, opacity 240ms var(--ease-out) ${delay}`,
                 }}
               >
-                <span className="text-text-primary">Block {block.block}</span>
-                <span className="text-text-tertiary">
+                <span className="whitespace-nowrap text-text-primary">Block {block.block}</span>
+                <span className="whitespace-nowrap text-text-tertiary">
                   {block.spatialOut}&sup2; &times; {block.channels}
                 </span>
               </button>
